@@ -1,0 +1,534 @@
+*{
+  box-sizing: border-box;
+  --lightblue: rgba(234, 236, 247, 1);
+  --mediumblue: rgb(206, 206, 255);
+  --lightishblue: rgb(218, 222, 247);
+  --blueblue: blue;
+  --darkishblue: rgb(119, 119, 181);
+  --darkblue: rgb(0, 0, 123);
+  --lightblue_trans: rgba(255, 255, 255, 0.95);
+  --linegray: rgb(198, 198, 198);
+  font-family:sans-serif;
+  --padding: 20px;
+}
+:root{
+  overscroll-behavior: none;
+}
+body{
+  background-color: var(--lightblue);
+  padding: 20px;
+}
+
+/* --------------------------------------------- PERMANENT ELEMENTS --------------------------------------------- */
+h1, h3{
+  margin: 0 0 5px 0;
+}
+
+a{
+  color: inherit;
+  text-decoration: inherit;
+}
+
+p{
+  font-size: 14px;
+  margin: 0;
+}
+
+.smalltext{
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.button{
+  background-color: var(--mediumblue);
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 10px;
+  width: fit-content;
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  text-align: center;
+}
+.button:hover{
+  background-color: var(--lightblue);
+  outline: 1px solid var(--mediumblue);
+}
+
+#permanent-buttons{
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    z-index: 1000;
+    /* display: flex; */
+    gap: 20px;
+    /* justify-content: space-between; */
+    pointer-events: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+#permanent-buttons > div:nth-child(2){
+  justify-self: center;
+}
+#permanent-buttons > div:last-child{
+  justify-self: end;
+}
+#permanent-buttons > div {
+  display: flex;
+  gap: 10px;
+}
+#permanent-buttons .button{
+  border: 1px solid var(--darkblue);
+  box-shadow: 1px 2px 4px 1px rgba(14, 0, 141, 0.5);
+  pointer-events: all;
+}
+.permanent-button{
+  outline: 1px solid var(--mediumblue);
+  box-shadow: 1px 2px 4px 1px rgba(14, 0, 141, 0.5);
+  background-color: var(--darkblue);
+  color: white;
+  pointer-events: all;
+}
+.permanent-button:hover{
+  background-color: var(--blueblue);
+}
+
+.clickable{
+  cursor: pointer;
+}
+.hover-line:hover{
+  text-decoration: underline;
+}
+
+.text-whitebg{
+  background-color: white;
+  border: 1px solid red;
+}
+
+/* --------------------------------------------- WINDOW FRAME STYLING --------------------------------------------- */
+.frame-rnd, .frame-func{
+  /* background: rgba(234, 236, 247, 0.95); */
+  /* background: rgba(255, 255, 255, 0.95); */
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 2px 10px 15px rgba(0,0,0,0.5);
+}
+.frame-rnd{
+  background: rgba(255, 255, 255, 0.97);
+}
+.frame-func{
+  background: var(--lightblue_trans);
+  border: 2px solid var(--darkblue)
+}
+.frame-rnd .handler, .frame-func .handler{
+  /* background: var(--blueblue); */
+  height: 20px;
+  cursor: move;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px;
+  position: sticky;
+  top: 0;
+}
+.frame-rnd .handler{
+  background: var(--blueblue);
+}
+.frame-func .handler{
+  background: var(--darkblue);
+}
+.frame-rnd .handler::after{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 12px;
+  bottom: 0;
+  background: linear-gradient(90deg, rgba(0,0,255, 1) 20%, rgba(0,0,255,0) 100%);
+}
+.handler-btns{
+  display: flex;
+  gap: 3px;
+}
+.handler-btns > div{
+  height: 12px;
+  width: 12px;
+  border-radius: 7px;
+  cursor: pointer !important;
+  padding: 0;
+  /* border: 1px solid green; */
+  position: relative;
+}
+.handler-btns > div > svg{
+  /* background-color: yellow; */
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+}
+.handler-btns > div:first-child{
+  background-color: orange;
+}
+.handler-btns > div:last-child{
+  background-color: red;
+}
+.frame-rnd .handler > div:first-child{
+  width: fit-content;
+  max-width: 100%;
+  margin-right: 5px;
+  /* margin: 0 auto 0 auto; */
+  text-align: right;
+  overflow: scroll;
+  /* border: 1px solid green; */
+}
+.handler-path{
+  color: white;
+  text-transform: capitalize;
+  font-size: 12px;
+  margin-left: 6px;
+  /* direction: rtl; */
+  /* text-overflow: ellipsis; */
+  /* overflow: hidden; */
+  white-space: nowrap;
+  float: right;
+  /* display: flex; */
+}
+/* .handler-path > div{
+  direction: rtl;
+  display: inline;
+} */
+.handler-path-link{
+  cursor: pointer !important;
+}
+.handler-path-link:hover{
+  text-decoration: underline;
+}
+.frame-content{
+  height: 100%;
+  overflow: scroll;
+  position: relative;
+  /* padding: 20px; */
+}
+
+/* --------------------------------------------- TOOLTIP INFO STYLING --------------------------------------------- */
+.info-button{
+  width: 20px;
+  height: 20px;
+  background-color: var(--lightblue);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--darkblue);
+  cursor: pointer;
+}
+.info-tooltip{
+  position: absolute;
+  background-color: white;
+  z-index: 500;
+  padding: 10px;
+  box-shadow: 2px 5px 10px rgba(0,0,0,0.3);
+  font-size: 14px;
+  border-radius: 5px;
+}
+
+
+/* --------------------------------------------- HOME PAGE --------------------------------------------- */
+#home-background{
+  width: 100%;
+  padding: 3% 15% 0 350px;
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  color: rgb(0, 0, 0);
+}
+#home-background > div{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+#home-background h1, #home-background h3{
+  color: var(--darkishblue)
+}
+
+/* --------------------------------------------- BAR OF MINIMISED FRAMES --------------------------------------------- */
+#minim-bar{
+  position: absolute;
+  bottom: 0px;
+  left: 10px;
+  /* right: 0; */
+  display: flex;
+  column-gap: 10px;
+  flex-wrap: wrap-reverse;
+  /* flex-direction: wrap-reverse; */
+  align-content: flex-start;
+  width: 100%;
+}
+.minim-item{
+  border-top: 1px solid var(--blueblue);
+  border-left: 1px solid var(--blueblue);
+  border-right: 1px solid var(--blueblue);
+  border-radius: 10px 10px 0 0;
+  padding: 5px 10px;
+  display: flex;
+  gap: 5px;
+  background-color: white;
+  position: relative;
+  cursor: pointer;
+  box-shadow: 1px 2px 4px 1px rgba(14, 0, 141, 0.5);
+  text-transform: capitalize;
+  width: fit-content;
+}
+.minim-item-close{
+  position: absolute;
+  right: -5px;
+  top: -5px;
+  background-color: red;
+  width: 12px;
+  height: 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+}
+
+.minim-item-close > svg{
+  /* background-color: yellow; */
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+
+
+/* --------------------------------------------- FUNCTIONAL WINDOWS --------------------------------------------- */
+/* --------------------------------------------- OPEN OVERVIEW --------------------------------------------- */
+
+#open-overview-closeall{
+  width: fit-content;
+  background-color: var(--darkblue);
+  color: white;
+  position: fixed;
+  right: 10px;
+  top: 30px;
+}
+#open-overview-content{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: end;
+  padding: 60px 20px 40px 20px;
+  z-index: 1;
+}
+
+.open-overview-item, .open-overview-item-minim{
+  display: flex;
+  /* width: fit-content; */
+  gap: 2px;
+  position: relative;
+  min-width: fit-content;
+  min-height: max-content;
+  white-space: pre;
+}
+.open-overview-item > div:first-child{
+  background-color: var(--mediumblue);
+  border-radius: 3px;
+  /* height: 40px;  */
+  /* padding: 0 20px; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  text-transform: capitalize;
+  width: 100%;
+  cursor: pointer;
+  word-break:break-all;
+  font-size: 12px;
+  text-align: center;
+}
+.open-overview-item > div:first-child:hover{
+  outline: 1px solid var(--blueblue)
+}
+
+.open-overview-item-minim > div:first-child{
+  background-color: white;
+  border: 1px solid var(--blueblue);
+  border-radius: 5px 5px 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  text-transform: capitalize;
+  width: 100%;
+  cursor: pointer;
+  word-break:break-all;
+  font-size: 12px;
+  text-align: center;
+}
+
+.open-overview-closebtn{
+  position: absolute;
+  right: -5px;
+  top: -5px;
+  background-color: red;
+  width: 12px;
+  height: 12px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+}
+
+.open-overview-closebtn > svg{
+  /* background-color: yellow; */
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+#history-buttons{
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  top: 10px;
+  left: 10px;
+}
+
+.legend-item{
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  align-items: start;
+}
+
+.info-textcontainer{
+  padding: 30px 30px 30px 30px;
+}
+.info-textcontainer > div{
+  margin-bottom: 10px;
+}
+.info-bulletpoint{
+  padding: 5px 0 0 20px;
+}
+
+/* --------------------------------------------- WINDOWS --------------------------------------------- */
+/* --------------------------------------------- VIEWS FRAMES --------------------------------------------- */
+.view-switch-btns{
+  position:fixed;
+  bottom: 10px;
+  left: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+/* LIST */
+.listview-projectdiv{
+  width: 100%;
+  display: grid;
+  grid-template-columns: 30% 40% auto;
+  gap: 10px;
+  padding: 10px 20px 10px 20px;
+  border-top: 1px solid var(--linegray);
+}
+
+/* MAP */
+#mapview-buttons{
+  position: absolute;
+  display: flex;
+  gap: 10px;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  align-items: center;
+  width: max-content;
+}
+
+/* MATRIX */
+#matrixview-buttons{
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+
+/* --------------------------------------------- PROJECT FRAME --------------------------------------------- */
+#project-information{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+  padding: 20px 20px 10px 20px;
+}
+#project-information > div:first-child{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+#project-vizbtns{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 20px;
+  width: 100%;
+}
+#project-timelinecontainer{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#project-timelinetoggle{
+  width: fit-content;
+  /* margin: 0 0 0 auto; */
+}
+#project-viz-container{
+  display: flex;
+  /* align-items: center; */
+}
+
+
+/* --------------------------------------------- EDGE LIST --------------------------------------------- */
+.edgelist-item{
+  /* display: flex; */
+  width: 100%;
+  /* justify-content: space-between; */
+  padding: 10px 10px 10px 10px;
+  border-top: 1px solid var(--linegray);
+  /* margin: 5px 0; */
+  display: grid;
+  grid-template-columns: 30% 30px 1fr 30px 30%;
+}
+
+
+/* --------------------------------------------- NODES --------------------------------------------- */
+.node-container{
+  display: grid;
+  grid-template-columns: 20% auto 20%;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 20px;
+}
+.node-linkednodes-header{
+  font-size: 10px;
+}
+
+/* --------------------------------------------- EDGES --------------------------------------------- */
+.edge-container{
+  display: grid;
+  grid-template-columns: 1fr 30px 2fr 30px 1fr;
+  margin-bottom: 20px;
+  padding: 20px;
+}
