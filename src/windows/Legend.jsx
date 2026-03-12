@@ -167,7 +167,7 @@ const Legend = ({id, path, open, zMap, openTooltip, maxMatrix}) => {
             description: 'Window that is currently open somewhere',
             visual: <div className="open-overview-item" style={{width: "fit-content"}}>
                         <div style={{padding: "5px 10px"}}>
-                            <img src="/icons/icon_project.svg" width={10}/>
+                            <img src="./icons/icon_project.svg" width={10}/>
                             <div style={{fontSize: 10, fontWeight: 600}}>TITLE</div>
                         </div>
                     </div>
