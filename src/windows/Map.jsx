@@ -310,7 +310,7 @@ const MapView = ({handleOpen, bringToFront, path, open, openTooltip, hoveredItem
           .attr("y", -10)
           .attr("fill", (d) => hoveredItem.kind == "project" && hoveredItem.id == d.id ? "var(--blueblue)" : "#fff")
         nodeGroups.append('svg:image')
-          .attr("xlink:href", "/icons/icon_project.svg")
+          .attr("xlink:href", "./icons/icon_project.svg")
           .attr("width", 20)
           .attr("height", 20)
           .attr("x", -10)

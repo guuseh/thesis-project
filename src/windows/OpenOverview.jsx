@@ -59,7 +59,7 @@ const OpenOverview = ({open, setOpen, handleOpen, handleClose, handleCloseAll, i
                         onMouseEnter={() => setHoveredItem({"kind": o.kind, "id": o.id, "from": "open-overview"})}
                         onMouseLeave={() => setHoveredItem({"kind": null, "id": null, "from": null})}
                         style={{backgroundColor: fill, color: color}}>
-                            <img src={`/icons/${iconpath}.svg`} height="40%" style={{filter: isHighlighted ? "invert(1)" : null}}/>
+                            <img src={`./icons/${iconpath}.svg`} height="40%" style={{filter: isHighlighted ? "invert(1)" : null}}/>
                             <div style={{minWidth: "min-content"}}>{text}</div></div>
                     <div className="open-overview-closebtn" onClick={() => {handleClose(o.kind, o.id)}}>
                         <svg width="100%" height="100%" >
@@ -74,7 +74,7 @@ const OpenOverview = ({open, setOpen, handleOpen, handleClose, handleCloseAll, i
                         onMouseEnter={() => setHoveredItem({"kind": o.kind, "id": o.id, "from": "open-overview"})}
                         onMouseLeave={() => setHoveredItem({"kind": null, "id": null, "from": null})}
                         style={{backgroundColor: fill, color: color, flexDirection: "row"}}>
-                            <img src={`/icons/${iconpath}.svg`} height="50%" style={{filter: isHighlighted ? "invert(1)" : null}}/>
+                            <img src={`./icons/${iconpath}.svg`} height="50%" style={{filter: isHighlighted ? "invert(1)" : null}}/>
                             <div style={{minWidth: "min-content"}}>{text}</div></div>
                         <div className="open-overview-closebtn" onClick={() => {handleClose(o.kind, o.id)}}>
                             <svg width="100%" height="100%" >

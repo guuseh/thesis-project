@@ -75,7 +75,7 @@ const Node = ({handleOpen, id, path, hoveredItem, setHoveredItem}) => {
           <div onClick={() => handleOpen("project", projectdata.id, path)} className="clickable hover-line"
             onMouseEnter={(event) => {setHoveredItem({"kind": "project", "id": projectdata.id, "from": `node-${id}`})}} 
             onMouseLeave={(event) => {setHoveredItem({"kind": null, "id": null, "from": null})}}>
-                <img src="/icons/icon_project.svg" height="10px"/> 
+                <img src="./icons/icon_project.svg" height="10px"/> 
                 <span> {projectdata.title}</span></div>
           <div onMouseEnter={(event) => {setHoveredItem({"kind": "node", "id": nodedata.id, "from": `node-${id}`})}} 
                onMouseLeave={(event) => {setHoveredItem({"kind": null, "id": null, "from": null})}}><h3>{phase_labels[nodedata.phase]}</h3></div>
