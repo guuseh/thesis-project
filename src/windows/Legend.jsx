@@ -68,7 +68,7 @@ const Legend = ({id, path, open, zMap, openTooltip, maxMatrix}) => {
         'node-icon': {
             label: 'Design phase',
             description: 'A stage in the project development process',
-            visual: <img src="/icons/icon_node.svg" width={20}/>
+            visual: <img src="./icons/icon_node.svg" width={20}/>
         },
         'internal-path': {
             label: 'Internal connection',
@@ -94,32 +94,32 @@ const Legend = ({id, path, open, zMap, openTooltip, maxMatrix}) => {
         'project-icon': {
             label: 'Project',
             description: 'A research project or tool',
-            visual: <img src="/icons/icon_project.svg" width={20}/>
+            visual: <img src="./icons/icon_project.svg" width={20}/>
         },
         'list-icon': {
             label: 'List-view',
             description: "Chronological overview of projects",
-            visual: <img src="/icons/icon_list.svg" width={20}/>
+            visual: <img src="./icons/icon_list.svg" width={20}/>
         }, 
         'map-icon': {
             label: 'Map-view',
             description: 'Network graph of projects and connections between them',
-            visual: <img src="/icons/icon_map.svg" width={20}/>
+            visual: <img src="./icons/icon_map.svg" width={20}/>
         },
         'matrix-icon': {
             label: 'Matrix-view',
             description: 'Matrices of connections between projects or design phases',
-            visual: <img src="/icons/icon_matrix.svg" width={20}/>,
+            visual: <img src="./icons/icon_matrix.svg" width={20}/>,
         }, 
         'edgelist-icon': {
             label: 'Edgelist',
             description: 'List of connecting paths',
-            visual: <img src="/icons/icon_edgelist.svg" width={20}/>
+            visual: <img src="./icons/icon_edgelist.svg" width={20}/>
         },
         'edge-icon': {
             label: 'Connecting path',
             description: 'A connection between one design phase and another',
-            visual: <img src="/icons/icon_edge.svg" width={20}/>
+            visual: <img src="./icons/icon_edge.svg" width={20}/>
         },
         'node-icon-small': {
             label: 'External design phase',

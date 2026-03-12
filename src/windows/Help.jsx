@@ -48,10 +48,10 @@ const Help = () => {
           <div>Hovering over windows or elements within windows highlights the corresponding element in other open windows. This helps you locate the different elements within the network as a whole.</div>
 
           <h3>Main Views</h3>
-          <div><img src="/icons/icon_list.svg" height="12"/><b> List View</b> – A chronological list of all projects with descriptions and metadata. Click any project title to open its detailed timeline. Use this when you want a structured overview or know which project you're looking for.</div>
+          <div><img src="./icons/icon_list.svg" height="12"/><b> List View</b> – A chronological list of all projects with descriptions and metadata. Click any project title to open its detailed timeline. Use this when you want a structured overview or know which project you're looking for.</div>
           
           <div>
-            <img src="/icons/icon_map.svg" height="12"/> 
+            <img src="./icons/icon_map.svg" height="12"/> 
             <b> Map View</b> – A network visualization showing relationships across projects and design phases.
               <div className="info-bulletpoint">Overview mode: Projects appear as nodes, with edges showing cross-project connections. Edge thickness indicates the number of connections.</div>
               <div className="info-bulletpoint">Detail mode: Individual phases within each project become visible, grouped by project. Internal connections (solid lines) and cross-project connections (dashed lines) are both shown.</div>
@@ -59,7 +59,7 @@ const Help = () => {
           </div>
 
           <div>
-            <img src="/icons/icon_matrix.svg" height="12"/>
+            <img src="./icons/icon_matrix.svg" height="12"/>
             <b> Matrix View</b> – A grid showing connection density between projects or phases.
               <div className="info-bulletpoint">Project Matrix: Rows and columns are projects. Cell color intensity shows how many connections exist from one project (row) to another (column). Only cross-project connections are counted.</div>
               <div className="info-bulletpoint">Phase Matrix: Rows and columns are design phases across all projects. Shows how frequently each phase leads to another across our entire body of work. Toggle to show all connections, or only count internal or cross-project connections.</div>
@@ -69,7 +69,7 @@ const Help = () => {
 
           <h3>Detail Views</h3>
           <div>
-            <img src="/icons/icon_project.svg" height="12"/>
+            <img src="./icons/icon_project.svg" height="12"/>
             <b> Project Window</b> – Shows a single project's information and timeline with kinds of phases arranged in rows and process stages in columns.
               <div className="info-bulletpoint">Toggle timeline mode to see how long each phase lasted</div>
               <div className="info-bulletpoint">Show matrix to see how phases connect to each other within this project</div>
@@ -77,11 +77,11 @@ const Help = () => {
               <div className="info-bulletpoint">Dashed lines extending to the top indicate connections to phases in other projects</div>
           </div>
 
-          <div><img src="/icons/icon_edgelist.svg" height="12"/><b> Edge List</b> – A filtered list of connections matching specific criteria (e.g., all connections from one project to another, or all instances where one phase led to another). Generated when you click on grouped network edges or matrix cells.</div>
+          <div><img src="./icons/icon_edgelist.svg" height="12"/><b> Edge List</b> – A filtered list of connections matching specific criteria (e.g., all connections from one project to another, or all instances where one phase led to another). Generated when you click on grouped network edges or matrix cells.</div>
           
-          <div><img src="/icons/icon_node.svg" height="12"/><b> Node Window</b> – Process details about a single design phase, and which other phases feed into it (incoming) and which it leads to (outgoing). Dashed connections indicate links to phases in different projects.</div>
+          <div><img src="./icons/icon_node.svg" height="12"/><b> Node Window</b> – Process details about a single design phase, and which other phases feed into it (incoming) and which it leads to (outgoing). Dashed connections indicate links to phases in different projects.</div>
           
-          <div><img src="/icons/icon_edge.svg" height="12"/><b> Edge Window</b> – Details about a connection between two phases, showing the source and target phases and their projects.</div>
+          <div><img src="./icons/icon_edge.svg" height="12"/><b> Edge Window</b> – Details about a connection between two phases, showing the source and target phases and their projects.</div>
           <br/>
 
           <h3>Functional Windows</h3>

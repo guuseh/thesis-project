@@ -342,7 +342,7 @@ const Home = () => {
                             : m.kind === 'edge' ? m.id.replaceAll("_", " ").replace("-", " – ")
                             : m.kind
             return <div className="minim-item" style={{zIndex: open.filter((o) => o.minim).length - i}}>
-                        <div><img src={`/icons/${iconpath}.svg`} height="12px" /></div>
+                        <div><img src={`./icons/${iconpath}.svg`} height="12px" /></div>
                         <div onClick={() => handleMaxim(m.kind, m.id)}>{text}</div>
                         <div className="minim-item-close" onClick={() => handleClose(m.kind, m.id)}>
                             <svg width="100%" height="100%" >

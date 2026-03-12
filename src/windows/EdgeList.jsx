@@ -155,7 +155,7 @@ const EdgeList = ({handleOpen, id, path, findProjectName, findNodeFromEdge, hove
                   onMouseEnter={(event) => {setHoveredItem({"kind": "project", "id": sourceProject, "from": `edgelist-${id}`})}} 
                   onMouseLeave={(event) => {setHoveredItem({"kind": null, "id": null, "from": null})}}
                   className="clickable hover-line">
-                  <img src="/icons/icon_project.svg" height="10px"/> 
+                  <img src="./icons/icon_project.svg" height="10px"/> 
                   <span> {findProjectName(edge.source)}</span></div>
             <h3 onClick={() => handleOpen("node", edge.source, path)} 
                   onMouseEnter={(event) => {setHoveredItem({"kind": "node", "id": edge.source, "from": `edgelist-${id}`})}} 
@@ -206,7 +206,7 @@ const EdgeList = ({handleOpen, id, path, findProjectName, findNodeFromEdge, hove
                   onMouseEnter={(event) => {setHoveredItem({"kind": "project", "id": targetProject, "from": `edgelist-${id}`})}} 
                   onMouseLeave={(event) => {setHoveredItem({"kind": null, "id": null, "from": null})}}
                   className="clickable hover-line">
-                  <img src="/icons/icon_project.svg" height="10px"/>   
+                  <img src="./icons/icon_project.svg" height="10px"/>   
                   <span> {findProjectName(edge.target)}</span></div>
             <h3 onClick={() => handleOpen("node", edge.target, path)} 
                   onMouseEnter={(event) => {setHoveredItem({"kind": "node", "id": edge.target, "from": `edgelist-${id}`})}} 

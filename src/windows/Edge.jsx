@@ -40,7 +40,7 @@ const Edge = ({handleOpen, id, path, hoveredItem, setHoveredItem}) => {
               onMouseEnter={(event) => {setHoveredItem({"kind": "project", "id": sourcenode.projectid, "from": `edge-${id}`})}} 
               onMouseLeave={(event) => {setHoveredItem({"kind": null, "id": null, "from": null})}} 
               className="clickable hover-line">
-                <img src="/icons/icon_project.svg" height="10px"/> 
+                <img src="./icons/icon_project.svg" height="10px"/> 
                 <span> {sourcenode.projectid}</span></div>
         <div onClick={() => handleOpen("node", sourcenode.id, path)} 
               onMouseEnter={(event) => {setHoveredItem({"kind": "node", "id": sourcenode.id, "from": `edge-${id}`})}} 
@@ -90,7 +90,7 @@ const Edge = ({handleOpen, id, path, hoveredItem, setHoveredItem}) => {
               onMouseEnter={(event) => {setHoveredItem({"kind": "project", "id": targetnode.projectid, "from": `edge-${id}`})}} 
               onMouseLeave={(event) => {setHoveredItem({"kind": null, "id": null, "from": null})}}
               className="clickable hover-line">
-                <img src="/icons/icon_project.svg" height="10px"/> 
+                <img src="./icons/icon_project.svg" height="10px"/> 
                 <span> {targetnode.projectid}</span></div>
         <div onClick={() => handleOpen("node", targetnode.id, path)} 
               onMouseEnter={(event) => {setHoveredItem({"kind": "node", "id": targetnode.id, "from": `edge-${id}`})}} 

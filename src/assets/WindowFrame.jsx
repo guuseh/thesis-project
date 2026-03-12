@@ -72,7 +72,7 @@ const WindowFrame = ({children, zMap, bringToFront, handleOpen, handleClose, han
                   navText = i.id
                 }
               return <>{index > 0 && <span>&#8594; </span>}
-                    {i.kind !== "func" && <img src={`/icons/icon_${imgpath}.svg`} style={{filter: "invert(1)", marginRight: "2px"}} height="9px"/>}
+                    {i.kind !== "func" && <img src={`./icons/icon_${imgpath}.svg`} style={{filter: "invert(1)", marginRight: "2px"}} height="9px"/>}
                     <span className="handler-path-link" onClick={() => handleOpen(i.kind, i.id, i.path)}>{navText}</span>  </>
                         })}</div>
             </div>

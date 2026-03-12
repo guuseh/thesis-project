@@ -155,14 +155,14 @@ const History = ({history, setNavHistory, handleOpen, handleClose, handleMinim, 
 
         // Map kinds to symbol IDs
         const kindToIcon = {
-            "default": "/icons/icon_default.svg#icon",
-            "map": "/icons/icon_map.svg#icon",
-            "matrix": "/icons/icon_matrix.svg#icon",
-            "list": "/icons/icon_list.svg#icon",
-            "project": "/icons/icon_project.svg#icon",
-            "edgelist": "/icons/icon_edgelist.svg#icon",
-            "node": "/icons/icon_node.svg#icon",
-            "edge": "/icons/icon_edge.svg#icon",
+            "default": "./icons/icon_default.svg#icon",
+            "map": "./icons/icon_map.svg#icon",
+            "matrix": "./icons/icon_matrix.svg#icon",
+            "list": "./icons/icon_list.svg#icon",
+            "project": "./icons/icon_project.svg#icon",
+            "edgelist": "./icons/icon_edgelist.svg#icon",
+            "node": "./icons/icon_node.svg#icon",
+            "edge": "./icons/icon_edge.svg#icon",
         };
 
         const g = svg.append("g")
