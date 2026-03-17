@@ -4,7 +4,7 @@ import projects from "../data/projects.js"
 import nodes from "../data/nodes.js"
 import edges from "../data/edges.js"
 
-const Matrix = ({handleOpen, path, openTooltip, hoveredItem, setHoveredItem, setMaxMatrix}) => {
+const Matrix = ({handleOpen, path, openTooltip, hoveredItem, setHoveredItem, setMaxMatrix, open}) => {
 
     const phase_order = ["PH", "DI", "UC", "FU", "VI", "DE", "TE"]
     const phase_labels = {
@@ -354,15 +354,21 @@ const Matrix = ({handleOpen, path, openTooltip, hoveredItem, setHoveredItem, set
                 const tgt = validNodes.find(n => n.id === edge.target);
                 return src?.phase === d.srcPhase && tgt?.phase === d.tgtPhase;
               });
-
+              if(phaseEdges == 'internal'){
+                handleOpen('edgelist', `internalphase:${d.srcPhase}>${d.tgtPhase}`, path);
+              } else if(phaseEdges == 'external'){
+                handleOpen('edgelist', `externalphase:${d.srcPhase}>${d.tgtPhase}`, path);
+              } else{
+                handleOpen('edgelist', `phase:${d.srcPhase}>${d.tgtPhase}`, path);
+              }
               // Open EdgeList with filtered edges
               // const edgeIds = filteredEdges.map(e => `${e.source}-${e.target}`).join(',');
-              handleOpen('edgelist', `phase:${d.srcPhase}>${d.tgtPhase}`, path);
+              
             });
         });
       });
     }
-  }, [matrixMode, size, validNodes, validEdges, phaseEdges])
+  }, [matrixMode, size, validNodes, validEdges, phaseEdges, open])
 
   return (
     <div ref={containerRef} style={{margin: 20}}>
@@ -377,16 +383,16 @@ const Matrix = ({handleOpen, path, openTooltip, hoveredItem, setHoveredItem, set
       </div>
       {matrixMode == "phase" &&
       <div style={{display: 'flex', gap: '5px', width: '100%', fontSize: '10px', justifyContent: 'center', marginTop: 5}}>
-        <div className="button" style={{backgroundColor: phaseEdges == "all" ? "var(--blueblue)" : "var(--lightblue)", color: phaseEdges == "all" ? "white" : "black"}} onClick={() => setPhaseEdges('all')}>All edges</div>
-        <div className="button" style={{backgroundColor: phaseEdges == "internal" ? "var(--blueblue)" : "var(--lightblue)", color: phaseEdges == "internal" ? "white" : "black"}} onClick={() => setPhaseEdges('internal')}>Only internal edges</div>
-        <div className="button" style={{backgroundColor: phaseEdges == "external" ? "var(--blueblue)" : "var(--lightblue)", color: phaseEdges == "external" ? "white" : "black"}} onClick={() => setPhaseEdges('external')}>Only cross-project edges</div>
+        <div className="button" style={{backgroundColor: phaseEdges == "all" ? "var(--blueblue)" : "var(--lightblue)", color: phaseEdges == "all" ? "white" : "black"}} onClick={() => setPhaseEdges('all')}>All connections</div>
+        <div className="button" style={{backgroundColor: phaseEdges == "internal" ? "var(--blueblue)" : "var(--lightblue)", color: phaseEdges == "internal" ? "white" : "black"}} onClick={() => setPhaseEdges('internal')}>Only internal connections</div>
+        <div className="button" style={{backgroundColor: phaseEdges == "external" ? "var(--blueblue)" : "var(--lightblue)", color: phaseEdges == "external" ? "white" : "black"}} onClick={() => setPhaseEdges('external')}>Only cross-project connections</div>
       </div>}
       
       <svg ref={svgRef} style={{ display: 'block', margin: '0 auto' }} />
 
        <div className="view-switch-btns">
-          <div onClick={() => handleOpen("view", "list", path)} className="button">Open List</div>
-          <div onClick={() => handleOpen("view", "map", path)} className="button">Open Map</div>
+          <div onClick={() => handleOpen("view", "list", path)} className="white-button">Open List</div>
+          <div onClick={() => handleOpen("view", "map", path)} className="white-button">Open Map</div>
         </div>
     </div>
   )

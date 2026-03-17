@@ -9,9 +9,9 @@ const Help = () => {
       
       <div style={{display: 'flex', gap: 10, position: 'sticky', top: 20, width: 'max-content', maxWidth: "95%"}}>
         <div style={{backgroundColor: info == "platform" ? "var(--blueblue)" : "var(--lightblue)", color: info == "platform" ? "white" : "black"}} onClick={() => setInfo("platform")} className="button">The platform</div>
-        {/* <div style={{backgroundColor: info == "finngen" ? "var(--blueblue)" : "var(--lightblue)", color: info == "finngen" ? "white" : "black"}} onClick={() => setInfo("finngen")} className="button">VCD & FinnGen</div> */}
         <div style={{backgroundColor: info == "phases" ? "var(--blueblue)" : "var(--lightblue)", color: info == "phases" ? "white" : "black"}} onClick={() => setInfo("phases")} className="button">Different design phases</div>
         <div style={{backgroundColor: info == "windows" ? "var(--blueblue)" : "var(--lightblue)", color: info == "windows" ? "white" : "black"}} onClick={() => setInfo("windows")} className="button">Windows, views & navigation</div>
+        <div style={{backgroundColor: info == "finngen" ? "var(--blueblue)" : "var(--lightblue)", color: info == "finngen" ? "white" : "black"}} onClick={() => setInfo("finngen")} className="button">VCD & FinnGen</div>
         {/* <div style={{backgroundColor: info == "about" ? "var(--blueblue)" : "var(--lightblue)", color: info == "about" ? "white" : "black"}} onClick={() => setInfo("about")} className="button">About</div> */}
       </div>
 
@@ -26,7 +26,9 @@ const Help = () => {
           <div>This isn't meant to be consumed linearly. Navigate according to what interests you: follow a single project's evolution, trace how one design phase influences others across the entire body of work, or explore the thickest connections to see where cross-pollination happens most.</div>
         </div>
         : info === 'finngen' ?
-        <div className="info-textcontainer">vcd & finngen</div>
+        <div className="info-textcontainer">
+          FinnGen is a research project in genomics and personalised medicine. It has collected and analysed genome and health data from 500,000 Finnish biobank donors to understand the genetic basis of diseases. In a collaboration with Aalto’s VCD department, we build data visualisations to help us understand the progression and biological mechanisms of diseases.
+        </div>
         : info === 'phases' ?
         <div className="info-textcontainer">
           <div>Every project in our research group follows an unstructured progression through seven kinds of design phases. These aren't rigid sequential stages—projects often revisit earlier phases or work on multiple phases simultaneously—but they provide a consistent framework for documenting where insights emerge and how work progresses.</div>
@@ -43,7 +45,7 @@ const Help = () => {
         </div>
         : info === 'windows' ?
         <div className="info-textcontainer">
-          <div>This platform lets you explore our design research in multiple ways. Windows can be opened, moved, minimized, and stacked as you navigate. Click the permanent buttons at the bottom right to access Legend, History, Open Frames and Info at any time.</div>
+          <div>This platform lets you explore our design research in multiple ways. Windows can be opened, moved, minimized, and stacked as you navigate. Click the permanent buttons at the bottom right to access Legend, Your trails, Open Frames and Info at any time.</div>
 
           <div>Hovering over windows or elements within windows highlights the corresponding element in other open windows. This helps you locate the different elements within the network as a whole.</div>
 
@@ -88,10 +90,10 @@ const Help = () => {
           <div><b>Legend</b> – Shows visual symbols and their meanings. The legend adapts to highlight elements relevant to whichever window is currently on top, making it easier to understand what you're looking at.</div>
           
           <div>
-            <b>History</b> – A tree visualization of your browsing path through the platform. This is saved only for the current browsing session.
+            <b>Your trails</b> – A tree visualization of your browsing path through the platform. This is saved only for the current browsing session.
               <div className="info-bulletpoint">Click any node to reopen that window</div>
               <div className="info-bulletpoint">Click a connection to delete it and all subsequent paths (useful for cleaning up exploratory detours)</div>
-              <div className="info-bulletpoint">Clear entire history if you want to start fresh</div>
+              <div className="info-bulletpoint">Clear all trails if you want to start fresh</div>
               <div className="info-bulletpoint">Undo clear operations if you change your mind</div>
           </div>
 
@@ -105,7 +107,7 @@ const Help = () => {
           <div>Windows automatically stack with the most recently clicked on top</div>
           <div>Minimize windows to the bottom bar to keep them accessible without cluttering your view</div>
           <div>Click and drag window title bars to reposition them</div>
-          <div>The History window helps you understand how you got somewhere, especially useful after exploring many connections</div>
+          <div>Your Trails helps you understand how you got somewhere, especially useful after exploring many connections</div>
 
         </div>
         : info === 'about' ?

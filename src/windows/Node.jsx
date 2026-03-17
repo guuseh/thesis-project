@@ -40,7 +40,7 @@ const Node = ({handleOpen, id, path, hoveredItem, setHoveredItem}) => {
           {incomingedges.length < 1 ? 
             <div style={{opacity: 0.3, fontSize: "10px"}}>no nodes</div> : 
           incomingedges.map((e) => {
-            console.log(e.source.split("_")[0] == e.target.split("_")[0])
+            // console.log(e.source.split("_")[0] == e.target.split("_")[0])
             const nodeHighlighted = hoveredItem.kind == "node" && hoveredItem.id == e.source && hoveredItem.from !== `node-${id}`
             const nodeHovered = hoveredItem.kind == "node" && hoveredItem.id == e.source && hoveredItem.from == `node-${id}`
             const fillnode = nodeHighlighted ? "rgb(0,0,255)" : nodeHovered? "#000" : "#fff"

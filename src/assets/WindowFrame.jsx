@@ -7,15 +7,16 @@ const WindowFrame = ({children, zMap, bringToFront, handleOpen, handleClose, han
 
   // ! maybe add some randomisation to position so theyre not perfectly stacked
     const [pos, setPos] = useState(position !== undefined && position.length == 2 && position[0] !== undefined ? [position[0], position[1]] 
-                                    : kind == "view" ?    [Math.floor(Math.random()*20)-20,                         30] 
-                                    : kind == "project" ? [window.innerWidth*0.44+Math.floor(Math.random()*20)-20,  30] 
-                                    : kind == "edgelist" ?[Math.floor(Math.random()*20)-20,                         window.innerHeight*0.57+Math.floor(Math.random()*20)-20] 
-                                    : kind == "node" ?    [window.innerWidth*0.35+Math.floor(Math.random()*10)-20,  window.innerHeight*0.64+Math.floor(Math.random()*20)] 
-                                    :                     [window.innerWidth*0.62+Math.floor(Math.random()*10)-20,  window.innerHeight*0.64+Math.floor(Math.random()*20)])
+                                    : (kind == "view" && id !== "matrix") ?  [Math.floor(Math.random()*20)+10,   60] 
+                                    : (kind == 'view' && id == "matrix") ? [110 + Math.floor(Math.random()*20),   20]
+                                    : kind == "project" ? [window.innerWidth*0.45+Math.floor(Math.random()*20),  50] 
+                                    : kind == "edgelist" ?[Math.floor(Math.random()*20)+10,                         window.innerHeight*0.57+Math.floor(Math.random()*20)+30] 
+                                    : kind == "node" ?    [window.innerWidth*0.35+Math.floor(Math.random()*10)+20,  window.innerHeight*0.64+Math.floor(Math.random()*20)+30] 
+                                    :                     [window.innerWidth*0.62+Math.floor(Math.random()*10)+10,  window.innerHeight*0.64+Math.floor(Math.random()*20)+30])
   const [sizes, setSizes] = useState(size !== undefined && size.length == 2 && size[0] != undefined ? [size[0], size[1]] 
                                     : (kind == "view" && id == "list") ?    [window.innerWidth*0.43,  window.innerHeight*0.6]
-                                    : (kind == "view" && id == "map") ?    [window.innerWidth*0.43,  window.innerHeight*0.5]
-                                    : (kind == "view" && id == "matrix") ?    [window.innerHeight*0.6,  window.innerHeight*0.6]
+                                    : (kind == "view" && id == "map") ?    [window.innerWidth*0.43,  window.innerHeight*0.6]
+                                    : (kind == "view" && id == "matrix") ?    [window.innerHeight*0.7,  window.innerHeight*0.7]
                                     : kind == "project" ? [window.innerWidth*0.54,  window.innerHeight*0.6]
                                     : kind == "edgelist" ?[window.innerWidth*0.4,   window.innerHeight*0.36] 
                                     : kind == "node" ?    [window.innerWidth*0.25,  window.innerHeight*0.27]
@@ -35,7 +36,7 @@ const WindowFrame = ({children, zMap, bringToFront, handleOpen, handleClose, han
       style={{ zIndex: zMap[`${kind}_${id}`] ?? 100, 
                 boxShadow: hoveredItem.kind == kind && hoveredItem.id == id && (hoveredItem.from !== "window" && hoveredItem.from !== `edge-${id}` && hoveredItem.from !== `node-${id}`) ? "2px 10px 15px rgba(14, 14, 114, 0.53)" : null,
                 // outline: hoveredItem.kind == kind && hoveredItem.id == id && hoveredItem.from !== "window" && hoveredItem.from !== `edge-${id}` && hoveredItem.from !== `node-${id}` ? "2px solid var(--blueblue)" : null,
-                background: hoveredItem.kind == kind && hoveredItem.id == id && hoveredItem.from !== "window" && hoveredItem.from !== `edge-${id}` && hoveredItem.from !== `node-${id}` ? "var(--lightishblue)" : "rgba(255,255,255,0.97)"
+                background: hoveredItem.kind == kind && hoveredItem.id == id && hoveredItem.from !== "window" && hoveredItem.from !== `edge-${id}` && hoveredItem.from !== `node-${id}` ? "var(--lightskyblue)" : "rgba(255,255,255,0.97)"
                 }}
       position={{x: pos[0], y: pos[1]}}
       size={{width: sizes[0], height: sizes[1]}}
@@ -72,7 +73,7 @@ const WindowFrame = ({children, zMap, bringToFront, handleOpen, handleClose, han
                   navText = i.id
                 }
               return <>{index > 0 && <span>&#8594; </span>}
-                    {i.kind !== "func" && <img src={`./icons/icon_${imgpath}.svg`} style={{filter: "invert(1)", marginRight: "2px"}} height="9px"/>}
+                    {i.kind !== "func" && <img src={`./icons/icon_${imgpath}.svg`} style={{filter: "invert(7%) sepia(100%) saturate(7364%) hue-rotate(248deg) brightness(114%) contrast(140%)", marginRight: "2px"}} height="9px"/>}
                     <span className="handler-path-link" onClick={() => handleOpen(i.kind, i.id, i.path)}>{navText}</span>  </>
                         })}</div>
             </div>

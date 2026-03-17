@@ -3,6 +3,7 @@ import {useEffect, useState} from 'react'
 const Legend = ({id, path, open, zMap, openTooltip, maxMatrix}) => {
 
     const [top, setTop] = useState('All')
+    const [showOther, setShowOther] = useState(false)
 
     useEffect(() => {
         if(Object.keys(zMap).length === 0){
@@ -36,8 +37,8 @@ const Legend = ({id, path, open, zMap, openTooltip, maxMatrix}) => {
                     setTop('Design Phase')
                 } else if(topKey.startsWith("edge_")){
                     setTop('Path')
-                } else if(topKey == "func_history"){
-                    setTop('History')
+                } else if(topKey == "func_trails"){
+                    setTop('Trails')
                 } else if(topKey == "func_open"){
                     setTop('Open Frames')
                 } else {
@@ -55,11 +56,11 @@ const Legend = ({id, path, open, zMap, openTooltip, maxMatrix}) => {
         "Map": ['project-icon', 'node-icon', 'external-path-map', 'internal-path'],
         "Matrix": ['density'],
         "List": [],
-        "Project": ['node-icon', 'node-icon-small', 'internal-path', 'external-path', 'timeline-bracket', 'density'],
+        "Project": ['node-icon', 'internal-path', 'node-icon-small', 'external-path', 'timeline-bracket', 'density'],
         "Edgelist": ['node-icon', 'internal-path', 'external-path'],
         "Design Phase": ['node-icon', 'internal-path', 'external-path'],
         "Path": ['node-icon', 'internal-path', 'external-path'],
-        "History": ['list-icon', 'map-icon', 'matrix-icon', 'project-icon', 'edgelist-icon', 'node-icon', 'edge-icon', 'history-path'],
+        "Trails": ['list-icon', 'map-icon', 'matrix-icon', 'project-icon', 'edgelist-icon', 'node-icon', 'edge-icon', 'history-path'],
         "Open Frames": ['open-window', 'list-icon', 'map-icon', 'matrix-icon', 'project-icon', 'edgelist-icon', 'node-icon', 'edge-icon'],
         "All": ['list-icon', 'map-icon', 'matrix-icon', 'project-icon', 'edgelist-icon', 'node-icon', 'edge-icon', 'internal-path', 'external-path', 'density', 'history-path', 'external-path-map', 'node-icon-small', 'timeline-bracket', 'open-window'],
     }
@@ -141,8 +142,8 @@ const Legend = ({id, path, open, zMap, openTooltip, maxMatrix}) => {
             label: 'Phase duration',
             description: 'Shows how long a phase lasted',
             visual: <svg width={20} height={20}>
-                        <line x1={0} x2={20} y1={10} y2={10} stroke="black" strokeWidth="2" strokeDasharray="3 3"/>
-                        <line x1={19} x2={19} y1={2} y2={18} stroke="black" strokeWidth="2"/>
+                        <line x1={0} x2={20} y1={10} y2={10} stroke="black" strokeWidth="2" strokeDasharray="2 2"/>
+                        <rect x={14} y={7} width={6} height={6}/>
                     </svg>
         },
         'density': {
@@ -183,7 +184,7 @@ const Legend = ({id, path, open, zMap, openTooltip, maxMatrix}) => {
             "Edgelist": "Click on a design phase, path, or project title to open corresponding windows. Hover over to highlight the item in other open windows.",
             "Design Phase": "Click on a design phase, path, or project title to open corresponding windows. Hover over to highlight the item in other open windows.",
             "Path": "Click on a design phase, path, or project title to open corresponding windows. Hover over to highlight the item in other open windows.",
-            "History": "An overview of your explored paths. Click on an icon to reopen the window or bring to front. Hover over to highlight window across other open windows. To clear history: Click on a path to clear subsequent entries, or choose Clear history to clear all.",
+            "Trails": "An overview of your explored paths. Click on an icon to reopen the window or bring to front. Hover over to highlight window across other open windows. To clear trails: Click on a path to clear subsequent entries, or choose Clear trails to clear all.",
             "Open Frames": "Click on an item to bring that window to the front. To close windows: Click on the red dot in the corner to close that window, or choose Close all. Resize windows to see their dimensions reflected :)",
             "All": "Click on elements to open their corresponding windows. Hover over to highlight that item across open windows. Click on a specific window to load its legend.",
         }
@@ -201,7 +202,8 @@ const Legend = ({id, path, open, zMap, openTooltip, maxMatrix}) => {
             <div style={{padding: "20px 20px 10px 20px"}}>
                 <h3>Navigation: {top}</h3>
                 <div className="legend-item" style={{fontSize: 13}}>{getNavText(top)}</div>
-                <h3>Elements</h3>
+                {priorityItemsToShow.length > 0 && 
+                    <h3>Elements</h3>}
                 {priorityItemsToShow.map(item => (
                     <div className="legend-item" style={{alignItems: item.key == "open-window" ? 'center' : 'start'}}>
                         <div>{item.visual}</div>
@@ -215,7 +217,7 @@ const Legend = ({id, path, open, zMap, openTooltip, maxMatrix}) => {
                     </div>
                     ))}
             </div>
-            {secondaryItemsToShow.length > 0 &&
+            {secondaryItemsToShow.length > 0 && showOther &&
             <>
             <div style={{width: "100%", borderTop: "1px solid var(--linegray)"}}></div>
             <div style={{padding: 20}}>
@@ -228,13 +230,13 @@ const Legend = ({id, path, open, zMap, openTooltip, maxMatrix}) => {
                             <div className="info-button" style={{width: "14px", height: "14px", fontSize: "14px"}}
                                 onMouseEnter={(e) => openTooltip(e, "legendinfo", item.description)}
                                 onMouseLeave={(e) => openTooltip(e, 'close')}>i</div>
-                            {/* <div style={{fontSize: 13}}>{item.description}</div> */}
                         </div>
                     </div>
                     
                     ))}
             </div>
             </>}
+            <div className="white-button" style={{margin: '0 auto', fontSize: 10, marginBottom: 20}} onClick={() => setShowOther(prev => !prev)}>{showOther ? 'Hide' : 'Show'} other elements of this website</div>
     </div>
   )
 }

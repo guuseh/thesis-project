@@ -15,7 +15,7 @@ const List = ({handleOpen, path, hoveredItem, setHoveredItem}) => {
             {projects.sort((a,b) => {
                 return b.year.slice(-4) - a.year.slice(-4)
             }).map((p) => {
-                return <div className="listview-projectdiv" style={{backgroundColor: hoveredItem.kind == "project" && hoveredItem.id == p.id && hoveredItem.from !== "list" ? "var(--lightblue)" : null}}>
+                return <div className="listview-projectdiv" style={{backgroundColor: hoveredItem.kind == "project" && hoveredItem.id == p.id && hoveredItem.from !== "list" ? "var(--lightskyblue)" : null}}>
                     <div onClick={() => handleOpen("project", p.id, path)} className="hover-line clickable"
                         onMouseEnter={() => setHoveredItem({"kind": "project", "id": p.id, "from": "list"})}
                         onMouseLeave={() => setHoveredItem({"kind": null, "id": null, "from": null})}>
@@ -33,8 +33,8 @@ const List = ({handleOpen, path, hoveredItem, setHoveredItem}) => {
         </div>
 
         <div className="view-switch-btns">
-            <div onClick={() => handleOpen("view", "map", path)} className="button">open Map</div>
-            <div onClick={() => handleOpen("view", "matrix", path)} className="button">open Matrix</div>
+            <div onClick={() => handleOpen("view", "map", path)} className="white-button">Open Map</div>
+            <div onClick={() => handleOpen("view", "matrix", path)} className="white-button">Open Matrix</div>
         </div>
       </div>
   )

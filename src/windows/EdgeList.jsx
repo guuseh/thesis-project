@@ -47,6 +47,24 @@ const EdgeList = ({handleOpen, id, path, findProjectName, findNodeFromEdge, hove
       }
     }
 
+    if(type == 'internalphase'){
+      const [srcPhase, tgtPhase] = params.split(">")
+      return {
+        type: "internal-phase-to-phase",
+        sourcePhase: srcPhase,
+        targetPhase: tgtPhase
+      }
+    }
+
+    if(type == 'externalphase'){
+      const [srcPhase, tgtPhase] = params.split(">")
+      return {
+        type: "external-phase-to-phase",
+        sourcePhase: srcPhase,
+        targetPhase: tgtPhase
+      }
+    }
+
     if(type == 'proj-phase'){
       const [projectId, phaseParams] = params.split(":")
       const [srcPhase, tgtPhase] = phaseParams.split(">")
@@ -95,6 +113,27 @@ const EdgeList = ({handleOpen, id, path, findProjectName, findNodeFromEdge, hove
           return src.phase === parsedId.sourcePhase && tgt.phase === parsedId.targetPhase
         })
       }
+      case 'internal-phase-to-phase': {
+        return allEdges.filter(edge => {
+          const src = allNodes.find(n => n.id === edge.source)
+          const tgt = allNodes.find(n => n.id === edge.target)
+          if(!src || !tgt) return false
+          
+          const internal = src.projectid == tgt.projectid;
+          internal && console.log(src, tgt)
+          return internal && src.phase === parsedId.sourcePhase && tgt.phase === parsedId.targetPhase
+        })
+      }
+      case 'external-phase-to-phase': {
+        return allEdges.filter(edge => {
+          const src = allNodes.find(n => n.id === edge.source)
+          const tgt = allNodes.find(n => n.id === edge.target)
+          if(!src || !tgt) return false
+          
+          const internal = src.projectid !== tgt.projectid;
+          return internal && src.phase === parsedId.sourcePhase && tgt.phase === parsedId.targetPhase
+        })
+      }
       case 'project-phase-to-phase': {
         return allEdges.filter(edge => {
           const src = allNodes.find(n => n.id === edge.source)
@@ -124,18 +163,24 @@ const EdgeList = ({handleOpen, id, path, findProjectName, findNodeFromEdge, hove
     <div style={{marginBottom: "30px"}}>
       <div style={{padding: "20px 20px 10px 20px"}}>
         { parsedId.type === "project-to-project" ?
-          <h3>Edges from {findProjectName(parsedId.sourceProject)} to {parsedId.targetProject != null ? findProjectName(parsedId.targetProject) : "all projects"}</h3>
+          <h3>{filteredEdges.length} connection{filteredEdges.length > 1 && 's'} from <i>{findProjectName(parsedId.sourceProject)}</i> to {parsedId.targetProject != null ? <i>{findProjectName(parsedId.targetProject)}</i> : "all projects"}</h3>
           : parsedId.type === "phase-to-phase" ?
-          <h3>All edges from {phase_labels[parsedId.sourcePhase]} to {phase_labels[parsedId.targetPhase]}</h3>
+          <h3>{filteredEdges.length} connection{filteredEdges.length > 1 && 's'} from {phase_labels[parsedId.sourcePhase]} to {phase_labels[parsedId.targetPhase]}</h3>
           : parsedId.type === "project-phase-to-phase" ?
-          <h3>Edges within {findProjectName(parsedId.projectId)}, from {phase_labels[parsedId.sourcePhase]} to {phase_labels[parsedId.targetPhase]}</h3>
+          <h3>{filteredEdges.length} connection{filteredEdges.length > 1 && 's'} within <i>{findProjectName(parsedId.projectId)}</i>, from {phase_labels[parsedId.sourcePhase]} to {phase_labels[parsedId.targetPhase]}</h3>
+          : parsedId.type === 'internal-phase-to-phase' ?
+          <h3>{filteredEdges.length} internal connection{filteredEdges.length > 1 && 's'} from {phase_labels[parsedId.sourcePhase]} to {phase_labels[parsedId.targetPhase]}</h3>
+          : parsedId.type === 'external-phase-to-phase' ?
+          <h3>{filteredEdges.length} cross-project connection{filteredEdges.length > 1 && 's'} from {phase_labels[parsedId.sourcePhase]} to {phase_labels[parsedId.targetPhase]}</h3>
           :
-          <h3>Edges</h3>
+          <h3>Connections</h3>
         }
       </div>
-      
-      {/* <div className="smalltext">Click a project/node/edge to view details. Solid lines are internal connections, dashed lines are cross-project.</div> */}
-      {filteredEdges.map((edge, i) => {
+      {filteredEdges.sort((a,b) => {
+        const projecta = projects.find((p) => p.id == a.source.split("_")[0])
+        const projectb = projects.find((p) => p.id == b.source.split("_")[0])
+        return projectb.year.slice(-4) - projecta.year.slice(-4)
+      }).map((edge, i) => {
         const sourceHighlight = hoveredItem.kind == "node" && hoveredItem.id == edge.source && hoveredItem.from !== `edgelist-${id}`
         const sourceHover = hoveredItem.kind == "node" && hoveredItem.id == edge.source && hoveredItem.from == `edgelist-${id}`
         const sourceFill = sourceHighlight ? "var(--blueblue)" : sourceHover ? "#000" : "#fff"
@@ -160,7 +205,7 @@ const EdgeList = ({handleOpen, id, path, findProjectName, findNodeFromEdge, hove
             <h3 onClick={() => handleOpen("node", edge.source, path)} 
                   onMouseEnter={(event) => {setHoveredItem({"kind": "node", "id": edge.source, "from": `edgelist-${id}`})}} 
                   onMouseLeave={(event) => {setHoveredItem({"kind": null, "id": null, "from": null})}}
-                  className="clickable hover-line">{phase_labels[findNodeFromEdge(edge.source).phase]}</h3>
+                  className="clickable hover-line"><b>{edge.source.split("_")[1]} – {phase_labels[findNodeFromEdge(edge.source).phase]}</b></h3>
             <p>{memoNodes.find((n) => n.id === edge.source).short_desc}</p>
           </div>
 
@@ -211,7 +256,7 @@ const EdgeList = ({handleOpen, id, path, findProjectName, findNodeFromEdge, hove
             <h3 onClick={() => handleOpen("node", edge.target, path)} 
                   onMouseEnter={(event) => {setHoveredItem({"kind": "node", "id": edge.target, "from": `edgelist-${id}`})}} 
                   onMouseLeave={(event) => {setHoveredItem({"kind": null, "id": null, "from": null})}}
-                  className="clickable hover-line">{phase_labels[findNodeFromEdge(edge.target).phase]}</h3>
+                  className="clickable hover-line">{edge.target.split("_")[1]} – {phase_labels[findNodeFromEdge(edge.target).phase]}</h3>
             <p>{memoNodes.find((n) => n.id === edge.target).short_desc}</p>
           </div>
         </div>

@@ -133,25 +133,132 @@ const History = ({history, setNavHistory, handleOpen, handleClose, handleMinim, 
         setCanUndo(true)
     }, [history, setNavHistory])
 
+        const width = size.width;
+        const height = size.height;
+        const margin = { top: 0, right: 100, bottom: 20, left: 60 }
+
+        const svgGroupRef = useRef(null)
+
+        const [bounds, setBounds] = useState(null)
 
     useEffect(() => {
         if(!svgRef.current) return;
 
         d3.select(svgRef.current).selectAll("*").remove();
 
-        if(!history || history.length == 0) return;
-
-        const treeData = buildTreeData(history);
-
-        const width = size.width;
-        const height = size.height;
-        const margin = { top: 20, right: 100, bottom: 20, left: 60 }
-
         const svg = d3.select(svgRef.current)
                     .attr("width", "100%")
                     .attr("height", "100%")
                     // .attr("viewBox", `0 0 ${width} ${height}`)
                     .attr("preserveAspectRatio", "xMidYMid meet");
+
+        const zoomGroup = svg.append('g').attr('class', 'zoom-group')
+
+        const g = zoomGroup.append("g")
+                    .attr('class', 'zoom-g')
+                    .attr("transform", `translate(${margin.left}, ${margin.top})`)
+        svgGroupRef.current = g
+
+        // g.selectAll('*').remove();
+
+        // const zoom = d3.zoom()
+        //         .scaleExtent([0.1, 3])
+        //         .on('zoom', (e) => {zoomGroup.attr('transform', e.transform)})
+
+        
+        // svg.call(zoom)
+
+        // requestAnimationFrame(() => {
+        //     try {
+        //         if(bounds !== null){
+        //         console.log(bounds)
+        //         const fullWidth = bounds.width + margin.left + margin.right
+        //         const fullHeight = bounds.height + margin.top + margin.bottom 
+
+        //         const scale = Math.min(
+        //             width / fullWidth,
+        //             height / fullHeight,
+        //             1
+        //         ) * 0.9
+
+        //         const translateX = (width - fullWidth * scale) / 2
+        //         const translateY = (height - fullHeight * scale) / 2
+
+        
+        //     svg.transition()
+        //             .duration(500)
+        //             .call(
+        //                 zoom.transform,
+        //                 d3.zoomIdentity
+        //             .translate(translateX, translateY)
+        //             .scale(scale)
+        //             )
+        //         }
+        //     } catch(e) {
+        //         console.error('error fitting tree to view:', e)
+        //     }
+        // })
+
+        // const svg = d3.select(svgRef.current);
+        // const zoomGroup = svg.select(".zoom-group")
+        // const g = svg.select('.zoom-g')
+        // setTimeout(() => {
+        // let bounds = g.node().getBBox()
+        
+        // }, 100)
+        
+
+        
+    }, [])
+
+    // useEffect(() => {
+    //     const svg = d3.select(svgRef.current)
+    //     const zoomGroup = svg.select(".zoom-group")
+    //     const g = svgGroupRef.current
+
+    //     g.selectAll('*').remove();
+        
+        
+        
+
+        
+    // }, [bounds])
+
+    useEffect(() => {
+        if(!svgGroupRef.current) return;
+
+        const svg = d3.select(svgRef.current)
+        const zoomGroup = svg.select(".zoom-group")
+        const g = svgGroupRef.current;
+
+        g.selectAll("*").remove();
+
+        if(!history || history.length == 0) return;
+
+        const treeData = buildTreeData(history);
+
+        // const svg = d3.select(svgRef.current)
+        //             .attr("width", "100%")
+        //             .attr("height", "100%")
+        //             // .attr("viewBox", `0 0 ${width} ${height}`)
+        //             .attr("preserveAspectRatio", "xMidYMid meet");
+
+        // const zoomGroup = svg.append('g').attr('class', 'zoom-group')
+
+        // const g = zoomGroup.append("g")
+        //             .attr('class', 'zoom-g')
+        //             .attr("transform", `translate(${margin.left}, ${margin.top})`)
+
+        const descendants = d3.hierarchy(treeData, d => d.children).descendants();
+        const treeHeight = Math.max(height - margin.top - margin.bottom, descendants.length * 20)
+        const treeWidth = Math.max(width - margin.left - margin.right, 800)
+        // const treeLayout = d3.tree().size([height - margin.top - margin.bottom, width - margin.left - margin.right])
+        const treeLayout = d3.tree().size([treeHeight, treeWidth])
+
+        const root = d3.hierarchy(treeData, d => d.children)
+
+        treeLayout(root)
+
 
         // Map kinds to symbol IDs
         const kindToIcon = {
@@ -164,15 +271,6 @@ const History = ({history, setNavHistory, handleOpen, handleClose, handleMinim, 
             "node": "./icons/icon_node.svg#icon",
             "edge": "./icons/icon_edge.svg#icon",
         };
-
-        const g = svg.append("g")
-                    .attr("transform", `translate(${margin.left}, ${margin.top})`)
-
-        const treeLayout = d3.tree().size([height - margin.top - margin.bottom, width - margin.left - margin.right])
-
-        const root = d3.hierarchy(treeData, d => d.children)
-
-        treeLayout(root)
 
         const edge = g.selectAll(".history-link")
             .data(root.links())
@@ -250,12 +348,65 @@ const History = ({history, setNavHistory, handleOpen, handleClose, handleMinim, 
                     }else{
                         text = d.data.id
                     }
-                    setHoveredItem({"kind": d.data.kind, "id": d.data.id, "from": "history"})
+                    setHoveredItem({"kind": d.data.kind, "id": d.data.id, "from": "trails"})
                     openTooltip(e, "title", text, "s")})
             .on("mouseleave", (e,d) => {
                     setHoveredItem({"kind": null, "id": null, "from": null})
                     openTooltip(e, "close")})
+
+                
+            // setBounds(g.node().getBBox());
+
+            const zoom = d3.zoom()
+                .scaleExtent([0.1, 3])
+                .on('zoom', (e) => {zoomGroup.attr('transform', e.transform)})
+
+        
+        svg.call(zoom)
+
+        requestAnimationFrame(() => {
+            try {
+                const bounds = g.node().getBBox()
+                console.log(bounds)
+                const fullWidth = bounds.width + margin.left + margin.right
+                const fullHeight = bounds.height + margin.top + margin.bottom 
+
+                const scale = Math.min(
+                    width / fullWidth,
+                    height / fullHeight,
+                    1
+                ) * 0.95
+
+                const translateX = (width - fullWidth * scale) / 2
+                const translateY = (height - fullHeight * scale) / 2
+
+        
+            svg.transition()
+                    .duration(500)
+                    .call(
+                        zoom.transform,
+                        d3.zoomIdentity
+                    .translate(translateX, translateY)
+                    .scale(scale)
+                    )
+                
+            } catch(e) {
+                console.error('error fitting tree to view:', e)
+            }
+        })
+                
+        
+
+        // requestAnimationFrame(() => {
+        //     try {
+                
+        //     } catch(e) {
+        //         console.error('error fitting tree to view:', e)
+        //     }
+        // })
     }, [history, size, handleLinkDelete, open])
+
+
 
     useEffect(() => {
         if(!svgRef.current) return;
@@ -264,7 +415,7 @@ const History = ({history, setNavHistory, handleOpen, handleClose, handleMinim, 
 
         svg.selectAll(".history-icon")
             .attr('fill', (d) => {
-                return hoveredItem.kind == d.data.kind && hoveredItem.id == d.data.id && hoveredItem.from !== "history" ? "var(--blueblue)" : "#000"
+                return hoveredItem.kind == d.data.kind && hoveredItem.id == d.data.id && hoveredItem.from !== "trails" ? "var(--blueblue)" : "#000"
             })
 
     }, [hoveredItem])
@@ -275,11 +426,11 @@ const History = ({history, setNavHistory, handleOpen, handleClose, handleMinim, 
   return (
     <div ref={containerRef} style={{width: "100%", height: "99%"}}>
         {!history || history.length == 0 ?
-            <div style={{position: "absolute", left: "50%", top: "50%", transform: "translate(-50%, -150%)", opacity: 0.3}}>No history to show</div>
+            <div style={{position: "absolute", left: "50%", top: "50%", transform: "translate(-50%, -150%)", opacity: 0.3}}>No trails to show yet</div>
         :   
         <div id="history-buttons">
-            <div className="button" style={{background: "var(--darkblue)", color: "white"}} onClick={() => {clearHistory(history)}}>Clear history</div>
-            <div className="smalltext">or click on a path to clear subsequent entries</div>
+            <div className="button" style={{background: "var(--darkblue)", color: "white"}} onClick={() => {clearHistory(history)}}>Clear trails</div>
+            <div className="smalltext">or click on a connection to clear subsequent paths</div>
         </div>
         }
         {canUndo && <div className="button" style={{position: "absolute", right: 20, background: "red"}} onClick={() => undoClearHistory()}>Undo</div>}

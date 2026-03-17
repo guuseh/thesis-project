@@ -43,7 +43,7 @@ const Project = ({handleOpen, id, path, open, openTooltip, hoveredItem, setHover
       return src?.projectid === id && tgt?.projectid !== id
     }), [nodes, edges, id])
 
-    const [timeMode, setTimeMode] = useState(false)
+    const [timeMode, setTimeMode] = useState(true)
     const [showMatrix, setShowMatrix] = useState(false)
     const [hoveredCell, setHoveredCell] = useState(null)
 
@@ -57,10 +57,11 @@ const Project = ({handleOpen, id, path, open, openTooltip, hoveredItem, setHover
 
     const COL_W = 40;
     const ROW_H = 40;
-    const PAD_L = 110;
-    const PAD_T = 20;
+    const PAD_L = 90;
+    const PAD_T = 30;
     const PAD_R = 30;
     const PAD_B = 10;
+    let LABEL_L = showMatrix ? 10 : PAD_L
 
     const colWidths = useMemo(() => {
       const widths = {};
@@ -76,22 +77,22 @@ const Project = ({handleOpen, id, path, open, openTooltip, hoveredItem, setHover
 
     const colStartX = useMemo(() => {
       const positions = {};
-      let currentX = PAD_L;
+      let currentX = LABEL_L;
 
       orders.forEach(order => {
         positions[order] = currentX;
         currentX += colWidths[order];
       })
       return positions;
-    }, [orders, colWidths])
+    }, [orders, colWidths, showMatrix])
 
     // const tlW = PAD_L + orders.length * COL_W + PAD_R
     const tlH = PAD_T + phases.length * ROW_H + PAD_B
 
     const tlW = useMemo(() => {
       const totalColWidth = Object.values(colWidths).reduce((sum, w) => sum + w, 0)
-      return PAD_L + totalColWidth + PAD_R
-    }, [colWidths])
+      return LABEL_L + totalColWidth + PAD_R
+    }, [colWidths, showMatrix])
 
     // map order letter -> x center of that column
     const colX = useCallback(
@@ -138,7 +139,7 @@ const Project = ({handleOpen, id, path, open, openTooltip, hoveredItem, setHover
     //     .attr('stroke', '#cccccc').attr('stroke-width', 1)
     // })
     
-    let cumulativeX = PAD_L;
+    let cumulativeX = LABEL_L;
     orders.forEach((order, i) => {
       grid.append('line')
         .attr('x1', cumulativeX)
@@ -157,22 +158,22 @@ const Project = ({handleOpen, id, path, open, openTooltip, hoveredItem, setHover
     //horizontal columns
     phases.forEach((_, i) => {
       grid.append('line')
-        .attr('x1', PAD_L).attr('x2', tlW - PAD_R)
+        .attr('x1', LABEL_L).attr('x2', tlW - PAD_R)
         .attr('y1', PAD_T + i * ROW_H).attr('y2', PAD_T + i * ROW_H)
         .attr('stroke', '#cccccc').attr('stroke-width', 1);
     });
     grid.append('line')
-      .attr('x1', PAD_L).attr('x2', tlW - PAD_R)
+      .attr('x1', LABEL_L).attr('x2', tlW - PAD_R)
       .attr('y1', PAD_T + phases.length * ROW_H)
       .attr('y2', PAD_T + phases.length * ROW_H)
       .attr('stroke', '#cccccc').attr('stroke-width', 1);
 
     // phase labels
-    phases.forEach(phase => {
+    !showMatrix && phases.forEach(phase => {
       const y = rowY(phase)
 
       svg.append('text')
-        .attr('x', PAD_L - 12).attr('y', y)
+        .attr('x', LABEL_L - 12).attr('y', y)
         .attr('text-anchor', 'end').attr('dominant-baseline', 'middle')
         .attr('font-size', 12)
         .attr('fill', "black")
@@ -182,8 +183,8 @@ const Project = ({handleOpen, id, path, open, openTooltip, hoveredItem, setHover
     })
 
     svg.append('text')
-      .attr('x', PAD_L)
-      .attr('y', PAD_T - 6)
+      .attr('x', LABEL_L)
+      .attr('y', PAD_T - 10)
       .attr('font-size', 10)
       .attr('fill', '#999')
       .text('time →')
@@ -260,6 +261,15 @@ const Project = ({handleOpen, id, path, open, openTooltip, hoveredItem, setHover
                 .attr('fill', "#fff")
           })
           .append('title').text(`${tgt.id.replace("_", " ")} in ${projects.find((p) => p.id == tgt.id.split("_")[0]).title}`)
+    
+      edgeGroup.append('text')
+          .datum({"tgt": tgt, "isExternal": true})
+          .attr("x", x2 + 5)
+          .attr("y", y2 - 2)
+          .attr("font-size", 8)
+          .attr('fill', "#999")
+          .text(d => tgt.id.split("_")[0])
+    
     })
 
     edgedata.forEach((edge) => {
@@ -331,17 +341,18 @@ const Project = ({handleOpen, id, path, open, openTooltip, hoveredItem, setHover
           .attr('x2', rx - 4).attr('y2', cy)
           .attr('stroke', color).attr('stroke-width', 2)
           .attr('opacity', 0.8)
-          .attr('stroke-dasharray', '3,3');
+          .attr('stroke-dasharray', '2,2');
 
         //  g.append('line') // dashed line endcap
         //   .attr('x1', rx).attr('y1', cy - 8)
         //   .attr('x2', rx).attr('y2', cy + 8)
         //   .attr('stroke', color).attr('stroke-width', 2)
         //   .attr('opacity', 0.8);
-        g.append('circle')
-          .attr('cx', rx)
-          .attr('cy', cy)
-          .attr('r', 4)
+        g.append('rect')
+          .attr('x', rx - 3)
+          .attr('y', cy - 3)
+          .attr('width', 6)
+          .attr('height', 6)
       }
 
       g.append('circle')
@@ -368,7 +379,7 @@ const Project = ({handleOpen, id, path, open, openTooltip, hoveredItem, setHover
       g.append('title').text(`${node.id.replace("_", " ")}\n${phase_labels[node.phase] || node.phase}`);
     })  
 
-  }, [nodedata, edgedata, timeMode, orders, phases, colX, rowY, bracketRight, open])
+  }, [nodedata, edgedata, timeMode, orders, phases, colX, rowY, bracketRight, open, showMatrix])
 
   useEffect(() => { // hover effect timeline
       const isHighlighted = (d) => hoveredCell && d.src.phase === hoveredCell.srcPhase && d.tgt.phase === hoveredCell.tgtPhase;
@@ -442,11 +453,12 @@ const Project = ({handleOpen, id, path, open, openTooltip, hoveredItem, setHover
     const allPhases = phase_order.filter(p => nodedata.some(n => n.phase === p))
     const n = allPhases.length;
 
-    const CELL = 30;
-    const LABEL = 30;
-    const PAD = 10;
+    const CELL = ROW_H;
+    const LABEL = PAD_T;
+    const LABEL_L = PAD_L
+    const PAD = 0;
 
-    const mW = LABEL + n * CELL + PAD;
+    const mW = LABEL_L + n * CELL + PAD;
     const mH = LABEL + n * CELL + PAD;
 
     svg.attr('width', mW)
@@ -479,7 +491,7 @@ const Project = ({handleOpen, id, path, open, openTooltip, hoveredItem, setHover
 
     // column/target labels top
     allPhases.forEach((phase, j) => {
-      const x = PAD + LABEL + j * CELL + CELL / 2;
+      const x = PAD + LABEL_L + j * CELL + CELL / 2;
 
       svg.append('text')
         .attr('x', x).attr('y', PAD + LABEL - 10)
@@ -495,25 +507,25 @@ const Project = ({handleOpen, id, path, open, openTooltip, hoveredItem, setHover
         const y = PAD + LABEL + i * CELL + CELL / 2;
 
         svg.append('text')
-          .attr('x', PAD + LABEL - 10).attr('y', y)
+          .attr('x', PAD + LABEL_L - 10).attr('y', y)
           .attr('text-anchor', 'end').attr('dominant-baseline', 'middle')
-          .attr('font-size', 10).attr('font-family', "'DM Mono', monospace")
+          .attr('font-size', 12).attr('font-family', "'DM Mono', monospace")
           .attr('fill', "#000")
-          .text(phase)
+          .text(phase_labels[phase])
           .on('mouseenter', (e) => {openTooltip(e, phase)})
           .on('mouseleave', (e) => {openTooltip(e, 'close')})
       });
 
     svg.append('text')
-      .attr('x', 0).attr('y', LABEL + 8)
-      .attr('text-anchor', 'start')
+      .attr('x', LABEL_L - 10).attr('y', LABEL - 2)
+      .attr('text-anchor', 'end')
       .attr('font-size', 9).attr('font-family', "'DM Mono', monospace")
       .attr('fill', '#9191a7')
       .text('source ↓');
 
     svg.append('text')
-      .attr('x', 0).attr('y', LABEL - 4)
-      .attr('text-anchor', 'start')
+      .attr('x', LABEL_L - 10).attr('y', LABEL - 14)
+      .attr('text-anchor', 'end')
       .attr('font-size', 9).attr('font-family', "'DM Mono', monospace")
       .attr('fill', '#9191a7')
       .text('target →');
@@ -522,7 +534,7 @@ const Project = ({handleOpen, id, path, open, openTooltip, hoveredItem, setHover
       allPhases.forEach((srcPhase, i) => {
         allPhases.forEach((tgtPhase, j) => {
           const count = counts[srcPhase][tgtPhase]
-          const x = PAD + LABEL + j * CELL
+          const x = PAD + LABEL_L + j * CELL
           const y = PAD + LABEL + i * CELL
 
           const isHovered = hoveredCell && hoveredCell.srcPhase === srcPhase && hoveredCell.tgtPhase === tgtPhase;
@@ -549,7 +561,7 @@ const Project = ({handleOpen, id, path, open, openTooltip, hoveredItem, setHover
             .on('click', (event, data) => count > 0 && handleOpen("edgelist", `proj-phase:${id}:${data.srcPhase}>${data.tgtPhase}`, path))
         })
       })
-  }, [showMatrix, nodedata, edgedata, phases])
+  }, [showMatrix, nodedata, edgedata, phases, open])
 
   useEffect(() => {
     if(!matrixRef.current) return;
@@ -576,34 +588,40 @@ const Project = ({handleOpen, id, path, open, openTooltip, hoveredItem, setHover
             <div>{projectdata.year}</div>
             <div><p>{projectdata.cont}</p></div>
             <div style={{display: "flex", gap: "10px", flexWrap: "wrap"}}>
-            {projectdata.links.tool.length > 0 && <div className="button"><a href={projectdata.links.tool} target="_blank">open tool &#8599;</a></div>}
-            {projectdata.links.paper.length > 0 && <div className="button"><a href={projectdata.links.paper} target="_blank">read paper &#8599;</a></div>}
-            {projectdata.links.other.length > 0 && <div className="button"><a href={projectdata.links.other} target="_blank">link &#8599;</a></div>}
+            {projectdata.links.tool.length > 0 && <div className="tool-button"><a href={projectdata.links.tool} target="_blank">open tool &#8599;</a></div>}
+            {projectdata.links.paper.length > 0 && <div className="tool-button"><a href={projectdata.links.paper} target="_blank">read paper &#8599;</a></div>}
+            {projectdata.links.other.length > 0 && <div className="tool-button"><a href={projectdata.links.other} target="_blank">link &#8599;</a></div>}
             </div>
           </div>
-          <div>
-            <p>{projectdata.long_desc}</p>
+          <div style={{position: 'relative'}}>
+            <input type="checkbox" id="readmore" />
+            <p className="projectdescription">{projectdata.long_desc}</p>
+            <label for="readmore" id="readmorelabel" className="tool-button">Read </label>
           </div>
         </div>
         <div id="project-timelinecontainer" style={{width: "100%", maxWidth: "100%", borderTop: "1px solid var(--linegray)", padding: "10px 0 40px 20px"}}>
           <div style={{maxWidth: "100%"}}>
             {nodedata.length ? <div id="project-vizbtns">
-              <div className="button" onClick={() => setShowMatrix(prev => !prev)}>{showMatrix ? 'Hide matrix' : 'Show matrix'}</div>
-            
-              <div style={{display: 'flex', gap: 10, alignItems: 'center'}}>
+
+            <div className="info-button" style={{opacity: showMatrix ? 1 : 0, pointerEvents: showMatrix ? 'all' : 'none'}} onMouseEnter={(e) => openTooltip(e, "projectmatrixinfo")} onMouseLeave={(e) => openTooltip(e, "close")}>i</div>
+                
+             <div style={{display: 'flex', gap: "10px"}}>   
+               <div className="button" onClick={() => setShowMatrix(prev => !prev)}>{showMatrix ? 'Hide matrix' : 'Show matrix'}</div>
+               <div className="button" onClick={() => setTimeMode(prev => !prev)}>{timeMode ? 'Hide durations' : 'Show durations'}</div>
+             </div>
+
+              {/* <div style={{display: 'flex', gap: 10, alignItems: 'center'}}> */}
                 <div className="info-button" onMouseEnter={(e) => openTooltip(e, "projectinfo")} onMouseLeave={(e) => openTooltip(e, "close")}>i</div>
-                <div className="button" onClick={() => setTimeMode(prev => !prev)}>{timeMode ? 'Hide duration' : 'Show duration'}</div>
-              </div>
+              {/* </div> */}
             </div>
             : <div className="smalltext">No available design phase data</div>}
             <div id="project-viz-container">
-              {showMatrix && <div style={{marginTop: "10px"}}>
-                <div className="info-button" onMouseEnter={(e) => openTooltip(e, "projectmatrixinfo")} onMouseLeave={(e) => openTooltip(e, "close")}>i</div>
+              {showMatrix && <div>
                 <svg ref={matrixRef}/>
               </div>}
               <div style={{width: "100%", overflow: "hidden"}}>
                 <div style={{width: "100%", overflow: "scroll"}}>
-                  <svg ref={timelineRef} width={tlW} height = {tlH} />
+                  <svg ref={timelineRef} width={tlW} height = {tlH}/>
                 </div>
               </div>
             </div>

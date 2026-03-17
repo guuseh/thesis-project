@@ -230,6 +230,12 @@ const MapView = ({handleOpen, bringToFront, path, open, openTooltip, hoveredItem
       g.selectAll('.linkstroke').attr('opacity', 0).remove();
       g.selectAll('.node').attr('opacity', 0).remove();
       g.selectAll('.link-arrows').remove();
+      g.selectAll('.title').remove();
+
+      // const center = g.append('circle')
+      //     .attr('cx', width/2)
+      //     .attr('cy', height/2)
+      //     .attr('r', 4)
 
         const links = g.append('g')
           .attr('class', 'links-group')
@@ -338,11 +344,11 @@ const MapView = ({handleOpen, bringToFront, path, open, openTooltip, hoveredItem
           .attr('fill', 'white')
 
         nodeGroups.append('text')
-          .attr('text-anchor', 'start')
+          .attr('text-anchor', d => d.x < width / 2 ? 'end' : 'start')
           .attr('class', 'titles')
           // .datum(bbox)
           .attr('dy', 5)
-          .attr('dx', 15)
+          .attr('dx', d => d.x < width / 2 ? -15 : 15)
           .attr('font-size', '14px')
           .attr('font-weight', 'bold')
           .attr('fill', '#000')
@@ -356,6 +362,7 @@ const MapView = ({handleOpen, bringToFront, path, open, openTooltip, hoveredItem
           .attr('height', d => d.bbox.height)
           .attr('x', d => d.bbox.x)
           .attr("y", d => d.bbox.y)
+
           
 
         // nodeGroups.append('text')
@@ -489,6 +496,7 @@ const MapView = ({handleOpen, bringToFront, path, open, openTooltip, hoveredItem
       g.selectAll(".linkstroke").attr('opacity', 0).remove();
       g.selectAll('.node').attr('opacity', 0).remove();
       g.selectAll('.link-arrows').remove();
+      g.selectAll('.title').remove();
 
 
       const links = g.append('g')
@@ -595,6 +603,33 @@ const MapView = ({handleOpen, bringToFront, path, open, openTooltip, hoveredItem
               d3.select(this)
                 .attr("fill", "#fff")
             })
+
+        const titleGroups = g.append('g')
+            .attr('class', 'title')
+            .selectAll('g')
+            .data(projectIds)
+            .join('g')
+            .append('foreignObject')
+            .attr('width', 200)
+            .attr('height', 200)
+            .style('pointer-events', 'none')
+            .attr("x", d => 
+                clusterCenters.get(d).x > width/2 ? clusterCenters.get(d).x + ((clusterCenters.get(d).x - width / 2) / 4) + 80
+                                                  : clusterCenters.get(d).x - ((width/2 - clusterCenters.get(d).x) / 4) - 280
+                // clusterCenters.get(d).x > width/2 ? clusterCenters.get(d).x + 100 : clusterCenters.get(d).x - 200
+              )
+            .attr('y', d => 
+              clusterCenters.get(d).y > height/2 ? clusterCenters.get(d).y + (clusterCenters.get(d).y - height/2) / 3
+                                                  : clusterCenters.get(d).y - (height/2 - clusterCenters.get(d).y) / 3
+              
+            )
+            .append("xhtml:div")
+            .style('font-size', "12px")
+            .style('font-weight', 'bold')
+            .style('text-align', d => clusterCenters.get(d).x > width/2 ? 'left' : 'right')
+            .style('background-color', 'rgba(255,255,255,0.7)')
+            .style('z-index', -1)
+            .html(d => projects.find(p => p.id == d).title)
           
 
         // nodeGroups.append('text')
@@ -764,11 +799,14 @@ const MapView = ({handleOpen, bringToFront, path, open, openTooltip, hoveredItem
   return (
     <>
 
-      <div ref={containerRef} style={{width: "100%", height: "100%"}} >
+      <div ref={containerRef} style={{width: "100%", height: "96%"}} >
         <div id="mapview-buttons">
           <div className="button" style={{backgroundColor: viewMode == "overview" ? "var(--blueblue)" : "var(--lightblue)", color: viewMode == "overview" ? "white" : "black"}} onClick={() => setViewMode("overview")}>Overview of projects</div>
           <div className="button" style={{backgroundColor: viewMode == "detail" ? "var(--blueblue)" : "var(--lightblue)", color: viewMode == "detail" ? "white" : "black"}} onClick={() => setViewMode("detail")}>Individual design phases</div>
           <div className="info-button" onMouseEnter={(e) => openTooltip(e, "mapinfo")} onMouseLeave={(e) => openTooltip(e, 'close')}>i</div>
+        </div>
+        <div className='smalltext' style={{position: 'absolute', top: '43px', left: '50%', transform: 'translateX(-50%)', width: 'max-content', maxWidth: '95%', backgroundColor: 'rgba(255,255,255,1)'}}>
+          {viewMode == "overview" ? 'A network showing the overall connections between different projects.' : 'A network showing all the design phases within each project and how they connect.'}
         </div>
         <svg onMouseDown={() => bringToFront("view", "map")}
         ref={svgRef}
@@ -809,8 +847,8 @@ const MapView = ({handleOpen, bringToFront, path, open, openTooltip, hoveredItem
         </div>
       </div> */}
       <div className="view-switch-btns">
-          <div onClick={() => handleOpen("view", "list", path)} className="button">Open List</div>
-          <div onClick={() => handleOpen("view", "matrix", path)} className="button">Open Matrix</div>
+          <div onClick={() => handleOpen("view", "list", path)} className="white-button">Open List</div>
+          <div onClick={() => handleOpen("view", "matrix", path)} className="white-button">Open Matrix</div>
         </div>
       </div>
       </>

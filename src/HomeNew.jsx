@@ -38,6 +38,10 @@ const Home = () => {
     const [canUndo, setCanUndo] = useState(false) // history
     const [canReopen, setCanReopen] = useState(false) // open frames
 
+    const [showBg, setShowBg] = useState(true)
+
+    const visualsRef = useRef();
+
     const keyOf = (kind, id) => `${kind}_${id}`
 
     useEffect(() => {
@@ -76,11 +80,11 @@ const Home = () => {
             return next
         })
 
-        handleOpenFunc("func", "legend", [])
-
         // !! func here for checking if there's double parameters & open/minim overlap & weed out from url & setOpen
 
         history.replaceState(initialParams, "", document.location.href)
+
+        updateVisualMargins()
 
         const handler = (event) => {
             if (event.state) setOpen(event.state)
@@ -141,10 +145,10 @@ const Home = () => {
         })
     }
 
+
     const handleOpen = (kind, id, parentPath) => {
-        
         // if it's already open, don't open
-        if(open.some(e => e.id == id && e.kind == kind && !e.minim)){
+        if(open.some(e => decodeURIComponent(e.id) === decodeURIComponent(id) && e.kind === kind && !e.minim)){
             // !!! ---> check if history contains the path, otherwise add to history !!!!
             bringToFront(kind, id)
             return;
@@ -185,7 +189,9 @@ const Home = () => {
             return next
         })
 
-        const newParams = paramsString.includes(`&${kind}=${id}`) ? paramsString.replace(`&${kind}=${id}`, "") : paramsString.includes(`${kind}=${id}`) ? paramsString.replace(`${kind}=${id}`, "") : paramsString.includes(`&minim=${kind}_${id}`) ? paramsString.replace(`&minim=${kind}_${id}`, "") : paramsString.includes(`minim=${kind}_${id}`) ? paramsString.replace(`minim=${kind}_${id}`, "") : paramsString
+        const encodedId = id.replace(">", "%3E")
+
+        const newParams = paramsString.includes(`&${kind}=${encodedId}`) ? paramsString.replace(`&${kind}=${encodedId}`, "") : paramsString.includes(`${kind}=${encodedId}`) ? paramsString.replace(`${kind}=${encodedId}`, "") : paramsString.includes(`&minim=${kind}_${encodedId}`) ? paramsString.replace(`&minim=${kind}_${encodedId}`, "") : paramsString.includes(`minim=${kind}_${encodedId}`) ? paramsString.replace(`minim=${kind}_${encodedId}`, "") : paramsString
         history.pushState(newState, "", newParams)
     }
 
@@ -289,6 +295,33 @@ const Home = () => {
         setTooltip({"show": true, "x": e.clientX, "y": e.clientY, "text": text, "size": size})
     }
 
+    function updateVisualMargins(){
+        const width = window.innerWidth;
+
+        const b = Math.log(7) / Math.log(2);
+        const a = 10 / Math.pow(1000, b);
+
+        const margin = a * Math.pow(width, b)
+        const clamped = Math.max(5, Math.min(margin, 150))
+
+        document.documentElement.style.setProperty('--dynamic-margin', `${clamped}px`)
+    }
+
+    useEffect(() => {
+     if(!visualsRef.current) return;
+
+        const resizeObserver = new ResizeObserver(entries => {
+            if(entries[0]){
+                updateVisualMargins()
+            }
+        })
+        resizeObserver.observe(visualsRef.current)
+
+        return() => resizeObserver.disconnect()
+  }, [])
+
+    // console.log(open)
+
   return (
     <>
     {open.map((i) => {
@@ -297,7 +330,7 @@ const Home = () => {
                     <MapView handleOpen={handleOpen} bringToFront={bringToFront} path={i.path} open={open} openTooltip={openTooltip} hoveredItem={hoveredItem} setHoveredItem={setHoveredItem}/></WindowFrame>
             : i.kind == "view" && i.id == "matrix" && !i.minim ? 
                 <WindowFrame zMap={zMap} bringToFront={bringToFront} handleOpen={handleOpen} handleClose={handleClose} handleMinim={handleMinim} saveFramePos={saveFramePos} kind="view" id="matrix" path={i.path} position={[i.x, i.y]} size={[i.w, i.h]} hoveredItem={hoveredItem} setHoveredItem={setHoveredItem} key="view_matrix">
-                    <Matrix handleOpen={handleOpen} path={i.path} openTooltip={openTooltip} hoveredItem={hoveredItem} setHoveredItem={setHoveredItem} setMaxMatrix={setMaxMatrix}/></WindowFrame>
+                    <Matrix handleOpen={handleOpen} path={i.path} openTooltip={openTooltip} hoveredItem={hoveredItem} setHoveredItem={setHoveredItem} setMaxMatrix={setMaxMatrix} open={open}/></WindowFrame>
             : i.kind == "view" && i.id == "list" && !i.minim ? 
                 <WindowFrame zMap={zMap} bringToFront={bringToFront} handleOpen={handleOpen} handleClose={handleClose} handleMinim={handleMinim} saveFramePos={saveFramePos} kind="view" id="list" path={i.path} position={[i.x, i.y]} size={[i.w, i.h]} hoveredItem={hoveredItem} setHoveredItem={setHoveredItem} key="view_list">
                     <List handleOpen={handleOpen} path={i.path} hoveredItem={hoveredItem} setHoveredItem={setHoveredItem}/></WindowFrame>
@@ -316,14 +349,14 @@ const Home = () => {
             : i.kind == "func" && i.id == "open" && !i.minim ?
                 <WindowFrame zMap={zMap} bringToFront={bringToFront} handleOpen={handleOpen} handleClose={handleClose} handleMinim={handleMinim} saveFramePos={saveFramePos} kind="func" id={i.id} path={i.path} position={[window.innerWidth/10*5, window.innerHeight/4]} size={[window.innerWidth*0.39, window.innerHeight*0.5]} hoveredItem={hoveredItem} setHoveredItem={setHoveredItem} key={`func_${i.id}`}>
                     <OpenOverview open={open} setOpen={setOpen} handleOpen={handleOpen} handleClose={handleClose} handleCloseAll={handleCloseAll} id={i.id} path={i.path} hoveredItem={hoveredItem} setHoveredItem={setHoveredItem} canReopen={canReopen} setCanReopen={setCanReopen}/></WindowFrame>
-            : i.kind == "func" && i.id == "history" && !i.minim ?
+            : i.kind == "func" && i.id == "trails" && !i.minim ?
                 <WindowFrame zMap={zMap} bringToFront={bringToFront} handleOpen={handleOpen} handleClose={handleClose} handleMinim={handleMinim} saveFramePos={saveFramePos} kind="func" id={i.id} path={i.path} position={[window.innerWidth/10, window.innerHeight/4]} size={[window.innerWidth*0.39, window.innerHeight*0.5]} hoveredItem={hoveredItem} setHoveredItem={setHoveredItem} key={`func_${i.id}`}>
                     <History history={navHistory} setNavHistory={setNavHistory} handleOpen={handleOpen} handleClose={handleClose} handleMinim={handleMinim} handleCloseAll={handleCloseAll} id={i.id} path={i.path} open={open} setOpen={setOpen} hoveredItem={hoveredItem} setHoveredItem={setHoveredItem} openTooltip={openTooltip} canUndo={canUndo} setCanUndo={setCanUndo}/></WindowFrame>
             : i.kind == "func" && i.id == "info" && !i.minim ?
                 <WindowFrame zMap={zMap} bringToFront={bringToFront} handleOpen={handleOpen} handleClose={handleClose} handleMinim={handleMinim} saveFramePos={saveFramePos} kind="func" id={i.id} path={i.path} position={[window.innerWidth*(0.30/2), window.innerHeight/12]} size={[window.innerWidth*0.65, window.innerHeight*0.80]} hoveredItem={hoveredItem} setHoveredItem={setHoveredItem} key={`func_${i.id}`}>
                     <Help id={i.id} path={i.path} open={open}/></WindowFrame>
             : i.kind == "func" && i.id == "legend" && !i.minim &&
-                <WindowFrame zMap={zMap} bringToFront={bringToFront} handleOpen={handleOpen} handleClose={handleClose} handleMinim={handleMinim} saveFramePos={saveFramePos} kind="func" id={i.id} path={i.path} position={[-10, 30]} size={[300, window.innerHeight-80]} hoveredItem={hoveredItem} setHoveredItem={setHoveredItem} key={`func_${i.id}`}>
+                <WindowFrame zMap={zMap} bringToFront={bringToFront} handleOpen={handleOpen} handleClose={handleClose} handleMinim={handleMinim} saveFramePos={saveFramePos} kind="func" id={i.id} path={i.path} position={[10, 60]} size={[300, window.innerHeight-80]} hoveredItem={hoveredItem} setHoveredItem={setHoveredItem} key={`func_${i.id}`}>
                     <Legend id={i.id} path={i.path} open={open} zMap={zMap} openTooltip={openTooltip} maxMatrix={maxMatrix}/></WindowFrame>
     })}
 
@@ -356,58 +389,122 @@ const Home = () => {
 
     <div id="permanent-buttons">
         <div>
-            <div id="legend-button" className="permanent-button button" onClick={() => handleOpenFunc("func", "legend", [])}>
+            <div id="legend-button" className="permanent-button" onClick={() => handleOpenFunc("func", "legend", [])}>
                 {(open.some(o => o.id === 'legend')&&zMap[`func_legend`] == Math.max(...Object.values(zMap))) && <svg width="10px" height="10px"><line x1="0%" x2="100%" y1="0%" y2="100%" stroke="white"/><line x1="0%" x2="100%" y1="100%" y2="0%" stroke="white"/></svg>} 
                 Legend</div>
         </div>
 
         <div>
-            <div className="button" onClick={() => {handleOpen('view','list', [])}}>List</div>
-            <div className="button" onClick={() => {handleOpen('view','map', [])}}>Map</div>
-            <div className="button" onClick={() => {handleOpen('view','matrix', [])}}>Matrix</div>
+            <div className="white-button" onClick={() => {handleOpen('view','list', [])}}>List</div>
+            <div className="white-button" onClick={() => {handleOpen('view','map', [])}}>Map</div>
+            <div className="white-button" onClick={() => {handleOpen('view','matrix', [])}}>Matrix</div>
         </div>
 
         <div>
-            <div className="permanent-button button" onClick={() => handleOpenFunc("func", "history", [])}>
-                {(open.some(o => o.id === 'history')&&zMap[`func_history`] == Math.max(...Object.values(zMap))) && <svg width="10px" height="10px"><line x1="0%" x2="100%" y1="0%" y2="100%" stroke="white"/><line x1="0%" x2="100%" y1="100%" y2="0%" stroke="white"/></svg>}
-                History</div>
-            <div className="permanent-button button" id="overview-open-btn" onClick={() => handleOpenFunc("func", "open", [])}>
+            <div className="permanent-button" onClick={() => handleOpenFunc("func", "trails", [])}>
+                {(open.some(o => o.id === 'trails')&&zMap[`func_trails`] == Math.max(...Object.values(zMap))) && <svg width="10px" height="10px"><line x1="0%" x2="100%" y1="0%" y2="100%" stroke="white"/><line x1="0%" x2="100%" y1="100%" y2="0%" stroke="white"/></svg>}
+                Your trails</div>
+            <div className="permanent-button" id="overview-open-btn" onClick={() => handleOpenFunc("func", "open", [])}>
                 {(open.some(o => o.id === 'open')&&zMap[`func_open`] == Math.max(...Object.values(zMap))) && <svg width="10px" height="10px"><line x1="0%" x2="100%" y1="0%" y2="100%" stroke="white"/><line x1="0%" x2="100%" y1="100%" y2="0%" stroke="white"/></svg>}
-                Open frames</div>
-            <div className="permanent-button button" onClick={() => handleOpenFunc("func", "info", [])}>
+                Open windows</div>
+            <div className="permanent-button" onClick={() => handleOpenFunc("func", "info", [])}>
                 {(open.some(o => o.id === 'info')&&zMap[`func_info`] == Math.max(...Object.values(zMap))) && <svg width="10px" height="10px"><line x1="0%" x2="100%" y1="0%" y2="100%" stroke="white"/><line x1="0%" x2="100%" y1="100%" y2="0%" stroke="white"/></svg>}
                 Info</div>
         </div>
     </div>
 
-    <div id="home-background" style={{padding: open.some(o => o.id === 'legend') ? "3% 15% 0 350px" : "3% 15% 0 15%"}}>
+    <div id="home-background" ref={visualsRef}>
         
-                <h1>Welcome to the Design Research Network</h1>
-                <div>
-                    
-                        <p>This interactive platform documents and explores the interconnected design research projects of <b>VCD & FinnGen</b>. It serves as both a tool for understanding our design process and a showcase of how our projects influence and build upon each other.</p>
-                        <p>FinnGen is a research project in genomics and personalised medicine. It has collected and analysed genome and health data from 500,000 Finnish biobank donors to understand the genetic basis of diseases. In a collaboration with Aalto’s VCD department, we build data visualisations to help us understand the progression and biological mechanisms of diseases.</p>
-                        <p>Each project progresses through distinct design phases, from initial concepts to final implementation. You can read more specifically about these phases under <b>info</b>. Beyond individual timelines, this platform reveals something less visible: the cross-pollination of ideas, methods, and insights that flow between projects. A visualisation technique developed in one project might inspire the interface of another; a challenge encountered in testing might lead to new research questions elsewhere.</p>
-                    
+                <div id="home-bg-top">
+                    <div id="home-instructions-left">
+                        {showBg && <>
+                        <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
+                            <path d="M40,0 Q20,100 100,100" fill="none" stroke="var(--bglineblue)" strokeWidth="2px" vectorEffect="non-scaling-stroke" />
+                            <line x1="40%" x2="30%" y1="0%" y2="10%" stroke="var(--bglineblue)" strokeWidth="2px" vectorEffect="non-scaling-stroke" />
+                            <line x1="40%" x2="50%" y1="0%" y2="10%" stroke="var(--bglineblue)" strokeWidth="2px" vectorEffect="non-scaling-stroke" />
+                        </svg>
+                        <div className="home-instructions-container">
+                            <p>Find out how to navigate each window & what any symbols mean in the legend.</p>
+                        </div>
+                        </>}
+                    </div>
+                    <div id="home-titlecard">
+                        <h1>The Interactive Design Process Visualisation</h1>
+                        <p>This interactive platform documents and explores the interconnected design research projects of VCD & FinnGen. It serves as both a tool for understanding our design process and a showcase of how our projects influence and build upon each other.</p>
+                    </div>
+                    <div id="home-instructions-right">
+                        {showBg && <>
+                        <div className="home-instructions-container"><p>Check out the progression of your exploration in your trails.</p></div>
+                        <div className="home-instructions-container"><p>For an overview of all the windows you have open, click here.</p></div>
+                        <div className="home-instructions-container"><p>To get more information about, well, everything, check info.</p></div>
+                        <svg width="100%" height="100%" preserveAspectRatio="none">
+                            <path d="M60,180 C-70,90 150,100 130,0" fill="none" stroke="var(--bglineblue)" strokeWidth="2px" vectorEffect="non-scaling-stroke" />
+                            <line x1="130" x2="120" y1="0" y2="12" stroke="var(--bglineblue)" strokeWidth="2px" vectorEffect="non-scaling-stroke" />
+                            <line x1="130" x2="140" y1="0" y2="12" stroke="var(--bglineblue)" strokeWidth="2px" vectorEffect="non-scaling-stroke" />
+                        </svg>
+                        <svg width="100%" height="100%" preserveAspectRatio="none">
+                            <path d="M30,0 Q140,50 60,90" fill="none" stroke="var(--bglineblue)" strokeWidth="2px" vectorEffect="non-scaling-stroke" />
+                            <line x1="30" x2="45" y1="0" y2="1" stroke="var(--bglineblue)" strokeWidth="2px" vectorEffect="non-scaling-stroke" />
+                            <line x1="30" x2="40" y1="0" y2="13" stroke="var(--bglineblue)" strokeWidth="2px" vectorEffect="non-scaling-stroke" />
+                        </svg>
+                        <svg width="100%" height="100%" preserveAspectRatio="none">
+                            <path d="M30,0 Q80,100 0,200" fill="none" stroke="var(--bglineblue)" strokeWidth="2px" vectorEffect="non-scaling-stroke" />
+                            <line x1="30" x2="45" y1="0" y2="12" stroke="var(--bglineblue)" strokeWidth="2px" vectorEffect="non-scaling-stroke" />
+                            <line x1="30" x2="27" y1="0" y2="18" stroke="var(--bglineblue)" strokeWidth="2px" vectorEffect="non-scaling-stroke" />
+                        </svg>
+                        </>}
+                    </div>
                 </div>
 
-                <h3 style={{marginTop: 20}}>Explore the Network</h3>
-                    <div>
-                        <p>Choose your entry point based on how you prefer to navigate:</p>
-                        <p><b>List View</b> – Browse all projects chronologically. Best for getting an overview of our work over time or finding a specific project by name and description.</p>
-                        <p><b>Map View</b> – Visualize the network of projects and their connections. Toggle between an overview of projects and individual design phases to see both the big picture and the intricate relationships.</p>
-                        <p><b>Matrix View</b> – Examine connection patterns. Switch between project-to-project and phase-to-phase views to understand which parts of our process most frequently inform each other.</p>
-                        <p>From any view, click on projects, phases, or connections to dive deeper. Review the legend to get information on the navigation and symbols of a particular window. Your browsing journey creates a history you can review, allowing you to retrace your path through the research landscape. For more detailed information on how to use this platform, on the design process, and on VCD & FinnGen, please check <b>info</b>.</p>
+                {showBg && <div id="home-visuals">
+                    <div id="home-visuals-left">
+                        <div id="home-visuals-one">
+                            <div>1</div>
+                            <h4>Choose the entry point of your exploration based on how you prefer to navigate.</h4>
+                        </div>
+                        <div id="home-visuals-list" className="home-visuals-container">
+                            <img src="./visuals/list.svg" />
+                            <div>
+                                <div className="white-button" onClick={() => {handleOpen('view','list', [])}}>Open List</div>
+                                <div className="smalltext">Browse all projects chronologically. Best for getting an overview of our work or finding a specific project by name or description.</div>
+                            </div>
+                        </div>
+                        <div id="home-visuals-map" className="home-visuals-container">
+                            <img src="./visuals/map.svg" />
+                            <div>
+                                <div className="white-button" onClick={() => {handleOpen('view','map', [])}}>Open Map</div>
+                                <div className="smalltext">Visualise the network of projects and their connections. Toggle between an overview of projects and individual design phases to see both the big picture and the detailed relationships.</div>
+                            </div>
+                        </div>
+                        <div id="home-visuals-matrix" className="home-visuals-container">
+                            <img src="./visuals/matrix.svg" />
+                            <div>
+                                <div className="white-button" onClick={() => {handleOpen('view','matrix', [])}}>Open Matrix</div>
+                                <div className="smalltext">Examine connection patterns. Switch between project-to-project and phase-to-phase views to understand which parts of our process most frequently inform each other.</div>
+                            </div>
+                        </div>
+                        <div id="home-visuals-two">
+                            <div>2</div>
+                            <h4>And explore the design process of each project on their pages:</h4>
+                        </div>
                     </div>
+                    <div id="home-visuals-right">
+                        <img src="./visuals/project.svg" />
+                        
+                    </div>
+                </div>}
                 
-                <div style={{display: "flex", gap: 10, flexDirection: 'row'}}>
+                {/* <div style={{display: "flex", gap: 10, flexDirection: 'row'}}>
                 <div className="button" onClick={() => {handleOpen('view','list', [])}}>Open List</div>
                 <div className="button" onClick={() => {handleOpen('view','map', [])}}>Open Map</div>
                 <div className="button" onClick={() => {handleOpen('view','matrix', [])}}>Open Matrix</div>
-                </div>
+                </div> */}
     </div>
+    
 
+    <div className="white-button" id="toggle-bg" style={{fontSize: '12px'}} onClick={() => setShowBg(prev => !prev)}>{showBg ? 'Hide' : 'Show'} instructional background</div>
 
+    <div id="grid"></div>
     
 
 
